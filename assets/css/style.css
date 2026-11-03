@@ -136,3 +136,23 @@
  .monthly-bills-table td[data-label]::before{content:attr(data-label);font-weight:700;color:var(--muted);font-size:12px}
  .monthly-bills-table td .btn{margin-inline-start:auto}
 }
+
+/* Mobile only: horizontal access for the two existing tables. Desktop unchanged. */
+@media(max-width:720px){
+ .measurement-history-scroll,.receipt-ledger-scroll{
+  display:block;max-width:100%;min-width:0;overflow-x:auto;overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+  scrollbar-width:thin;scrollbar-color:#176e58 #e9f4ee;
+  border-inline-end:3px solid #d7a95c;
+ }
+ .measurement-history-scroll table{min-width:630px;width:max-content}
+ .receipt-ledger-scroll table{min-width:540px;width:max-content}
+ .measurement-history-scroll th,.measurement-history-scroll td,
+ .receipt-ledger-scroll th,.receipt-ledger-scroll td{white-space:nowrap}
+ .measurement-history-scroll::-webkit-scrollbar,
+ .receipt-ledger-scroll::-webkit-scrollbar{height:7px}
+ .measurement-history-scroll::-webkit-scrollbar-thumb,
+ .receipt-ledger-scroll::-webkit-scrollbar-thumb{background:#176e58;border-radius:9px}
+ .measurement-history-scroll::-webkit-scrollbar-track,
+ .receipt-ledger-scroll::-webkit-scrollbar-track{background:#e9f4ee}
+}
