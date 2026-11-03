@@ -79,3 +79,10 @@
 .side .brand-wordmark b{font-size:19px;line-height:1.25;font-weight:800;color:#fff;white-space:nowrap;letter-spacing:0}
 .side .brand-wordmark span{font-size:10px;line-height:1.35;font-weight:700;color:#fff;letter-spacing:1.7px;white-space:nowrap}
 @media(max-width:850px){.side .logo{gap:8px}.side .brand-symbol{width:62px;height:62px;flex-basis:62px}.side .brand-wordmark b{font-size:17px}.side .brand-wordmark span{font-size:9px;letter-spacing:1px}}
+
+/* Option C preview: original horizontal logo in a light brand panel. */
+.side .logo.logo-option-c{display:block;direction:rtl;padding:0 0 20px;min-height:0;border-bottom:1px solid #ffffff25;margin:0 0 3px}
+.side .logo-option-c .brand-light-panel{display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #e4ece6;border-radius:13px;min-height:95px;padding:12px 9px;box-shadow:0 5px 15px #071e161a;overflow:hidden}
+.side .logo-option-c .brand-original{display:block;width:100%;height:auto;max-width:220px;object-fit:contain;object-position:center}
+.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+@media(max-width:850px){.side .logo.logo-option-c{padding-bottom:15px}.side .logo-option-c .brand-light-panel{min-height:75px;padding:9px 7px;border-radius:11px}}
