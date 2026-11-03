@@ -86,3 +86,11 @@
 .side .logo-option-c .brand-original{display:block;width:100%;height:auto;max-width:220px;object-fit:contain;object-position:center}
 .visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 @media(max-width:850px){.side .logo.logo-option-c{padding-bottom:15px}.side .logo-option-c .brand-light-panel{min-height:75px;padding:9px 7px;border-radius:11px}}
+
+/* Light panel final: brand symbol and accessible live wordmark, no missing PNG. */
+.side .logo-option-c .brand-light-panel{flex-direction:row;gap:10px;min-height:82px;padding:10px 11px;justify-content:center}
+.side .logo-option-c .brand-original-symbol{display:block;flex:0 0 54px;width:54px;height:54px;object-fit:contain}
+.side .logo-option-c .brand-light-wordmark{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:3px;min-width:0;direction:rtl;line-height:1.25}
+.side .logo-option-c .brand-light-wordmark b{color:#173e33;font-size:17px;font-weight:800;white-space:nowrap}
+.side .logo-option-c .brand-light-wordmark span{color:#526d60;font-size:10px;font-weight:700;letter-spacing:.09em;white-space:nowrap}
+@media(max-width:850px){.side .logo-option-c .brand-light-panel{min-height:72px;padding:8px;gap:7px}.side .logo-option-c .brand-original-symbol{flex-basis:42px;width:42px;height:42px}.side .logo-option-c .brand-light-wordmark b{font-size:15px}.side .logo-option-c .brand-light-wordmark span{font-size:9px}}
