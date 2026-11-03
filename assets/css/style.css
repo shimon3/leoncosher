@@ -94,3 +94,31 @@
 .side .logo-option-c .brand-light-wordmark b{color:#173e33;font-size:17px;font-weight:800;white-space:nowrap}
 .side .logo-option-c .brand-light-wordmark span{color:#526d60;font-size:10px;font-weight:700;letter-spacing:.09em;white-space:nowrap}
 @media(max-width:850px){.side .logo-option-c .brand-light-panel{min-height:72px;padding:8px;gap:7px}.side .logo-option-c .brand-original-symbol{flex-basis:42px;width:42px;height:42px}.side .logo-option-c .brand-light-wordmark b{font-size:15px}.side .logo-option-c .brand-light-wordmark span{font-size:9px}}
+
+/* Point 1 only: mobile compact header and fully visible navigation; desktop unchanged. */
+.mobile-nav-toggle{display:none}
+@media(max-width:720px){
+ .side{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 12px;position:relative;z-index:10;flex-wrap:wrap}
+ .side .logo.logo-option-c{border:0;padding:0;margin:0;flex:1;max-width:220px}
+ .side .logo-option-c .brand-light-panel{min-height:48px;padding:4px 8px;border-radius:9px;gap:7px}
+ .side .logo-option-c .brand-original-symbol{width:34px;height:34px;flex-basis:34px}
+ .side .logo-option-c .brand-light-wordmark b{font-size:13px}
+ .side .logo-option-c .brand-light-wordmark span{font-size:8px;letter-spacing:.04em}
+ .mobile-nav-toggle{display:block;border:1px solid #ffffff60;background:#2c5949;color:#fff;border-radius:9px;font-size:23px;width:44px;height:42px;line-height:1}
+ .side .nav{display:none;flex:0 0 100%;width:100%;overflow:visible;margin:2px 0 5px;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+ body.mobile-nav-open .side .nav{display:grid}
+ .side .nav button{white-space:normal;text-align:center;padding:9px 5px;min-height:38px;font-size:12px}
+ .main{padding:10px 12px}
+ .top{margin-bottom:11px;gap:7px;align-items:center}
+ .top>div:first-child{width:100%}
+ .top h1{font-size:20px;line-height:1.2}
+ .top .muted.small{font-size:10px}
+ .top .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%;align-items:center}
+ .top .owner-primary{grid-column:1;grid-row:1;width:100%;min-height:38px;padding:7px 5px;font-size:12px}
+ .top .toolbar>.tag{grid-column:2;grid-row:1;text-align:center;padding:7px 3px;font-size:11px}
+ .top .top-select-group{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%}
+ .top .custom-trigger{min-height:35px;padding:5px 7px;font-size:12px}
+ .top .control-symbol{width:19px;height:19px;font-size:13px}
+ .top .control-arrow svg{width:12px;height:12px}
+ .cards{gap:8px}.card{padding:11px}.card strong{margin:4px 0;font-size:25px}
+}
