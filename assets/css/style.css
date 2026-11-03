@@ -122,3 +122,17 @@
  .top .control-arrow svg{width:12px;height:12px}
  .cards{gap:8px}.card{padding:11px}.card strong{margin:4px 0;font-size:25px}
 }
+
+/* Point 2: responsive table for demo monthly bills only. */
+.monthly-bills-table{overflow-x:auto}
+.monthly-bills-table table{min-width:540px}
+.monthly-bills-table .btn{white-space:nowrap}
+@media(max-width:720px){
+ .monthly-bills-table{overflow:visible}
+ .monthly-bills-table table,.monthly-bills-table tbody,.monthly-bills-table tr,.monthly-bills-table td{display:block;min-width:0;width:100%}
+ .monthly-bills-table thead{display:none}
+ .monthly-bills-table tr{padding:11px 0;border-bottom:1px solid var(--line)}
+ .monthly-bills-table td{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 2px;text-align:start;border:0;white-space:normal}
+ .monthly-bills-table td[data-label]::before{content:attr(data-label);font-weight:700;color:var(--muted);font-size:12px}
+ .monthly-bills-table td .btn{margin-inline-start:auto}
+}
