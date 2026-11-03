@@ -68,3 +68,6 @@
 
 
 .logo{padding:7px 4px 20px}.brand-logo{display:block;width:100%;max-width:225px;height:auto;object-fit:contain;border-radius:5px}
+
+/* High-contrast branding in the dark sidebar */
+.side .brand-logo{width:100%;max-width:225px;height:auto;display:block;object-fit:contain;filter:none}
