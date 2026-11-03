@@ -66,3 +66,5 @@
 @media(max-width:720px){.top-select-group{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);width:100%;gap:8px}.custom-trigger{padding:8px 9px;gap:6px;font-size:13px}.control-symbol{width:24px;height:24px;font-size:15px}.custom-menu{min-width:100%;max-width:min(280px,90vw)}.custom-control:last-child .custom-menu{inset-inline-start:auto;inset-inline-end:0}}
 @media(max-width:380px){.custom-trigger{font-size:12px;padding:8px 7px}.control-symbol{width:22px;height:22px}}
 
+
+.logo{padding:7px 4px 20px}.brand-logo{display:block;width:100%;max-width:225px;height:auto;object-fit:contain;border-radius:5px}
