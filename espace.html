@@ -182,7 +182,7 @@ function render(){
       <h1>${T(s ? 'signupTitle' : 'loginTitle')}</h1>
       <p class="muted">${T(s ? 'signupIntro' : 'loginIntro')}</p>${msgHtml()}
       <form id="auth-form" novalidate>
-        <label class="field">${T('email')}<input name="email" type="email" autocomplete="email" dir="ltr" required></label>
+        <label class="field">${T('email')}<input name="email" type="email" autocomplete="email" dir="ltr" value="${esc(state.lastEmail || '')}" required></label>
         <label class="field">${T('password')}<input name="password" type="password" minlength="6" autocomplete="${s ? 'new-password' : 'current-password'}" dir="ltr" required>${s ? `<span class="small muted">${T('pwHint')}</span>` : ''}</label>
         <button class="btn" type="submit" ${state.busy ? 'disabled' : ''}>${T(s ? 'signup' : 'login')}</button>
       </form>
@@ -204,7 +204,7 @@ function render(){
     return;
   }
   if (v === 'staff') {
-    app.innerHTML = `<div class="panel auth"><h1>${T('staffTitle')}</h1><p class="muted">${T('staffIntro')}</p><a class="btn" href="index.html" style="display:inline-block;text-decoration:none">${T('toAdmin')}</a></div>`;
+    app.innerHTML = `<div class="panel auth"><h1>${T('staffTitle')}</h1><p class="muted">${T('staffIntro')}</p><a class="btn" href="admin.html" style="display:inline-block;text-decoration:none">${T('toAdmin')}</a></div>`;
     return;
   }
   if (v === 'home') { app.innerHTML = homeHtml(); return; }
@@ -300,6 +300,7 @@ function infoHtml(name){
 async function onAuth(e, isSignup){
   e.preventDefault();
   const f = new FormData(e.target), email = String(f.get('email')).trim(), password = String(f.get('password'));
+  state.lastEmail = email;
   state.busy = true; state.msg = null; render();
   try {
     const res = isSignup ? await sb.auth.signUp({ email, password }) : await sb.auth.signInWithPassword({ email, password });

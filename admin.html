@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ניהול | Leonid Studio</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+:root{--ink:#18342e;--green:#176e58;--green-d:#0f5644;--mint:#e9f4ee;--gold:#d7a95c;--bg:#f6f7f4;--line:#e2e9e3;--muted:#708078;--red:#ac4d49;--red-bg:#fbeae8;--warn:#956018;--warn-bg:#fff3d8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font:15px/1.55 system-ui,Arial,sans-serif;color:var(--ink)}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:6px 0 10px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand img{width:42px;height:42px}
+.brand b{display:block;font-size:17px}
+.brand span{font-size:11px;letter-spacing:.12em;color:var(--muted)}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer;text-decoration:none}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 6px 24px #173d2b08;margin-top:16px}
+h1{font-size:24px;margin:4px 0 2px} h2{font-size:18px;margin:0 0 12px} h3{font-size:15px;margin:14px 0 8px}
+.muted{color:var(--muted)} .small{font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap} .between{justify-content:space-between}
+.btn{border:0;border-radius:10px;padding:10px 15px;background:var(--green);color:#fff;font:inherit;font-weight:650;cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover{background:var(--green-d)} .btn:disabled{opacity:.6;cursor:wait}
+.btn.alt{background:#fff;color:var(--green);border:1px solid #b8decb}
+.btn.wa{background:#1f8f4e} .btn.sm{padding:7px 11px;font-size:13px}
+.link{background:none;border:0;padding:0;color:var(--green);font:inherit;font-weight:650;text-decoration:underline;cursor:pointer}
+.link.danger{color:var(--red)}
+.field{display:grid;gap:4px;font-size:13px;color:#5d7065}
+.field input,.field select{padding:9px 11px;border:1px solid var(--line);border-radius:10px;font:inherit;color:var(--ink);background:#fbfcfa;min-width:0}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end}
+.auth{max-width:420px;margin:24px auto}
+.auth .field{margin:10px 0}
+.msg{padding:10px 12px;border-radius:10px;margin:10px 0;font-size:14px}
+.msg.err{background:var(--red-bg);color:#7d2f2c;border:1px solid #e8b5b0}
+.msg.ok{background:var(--mint);color:var(--green-d);border:1px solid #b8decb}
+.alert{background:var(--red-bg);border:1px solid #e8b5b0;color:#7d2f2c;padding:11px 14px;border-radius:10px;margin-top:14px}
+.badge{display:inline-block;border-radius:20px;padding:3px 9px;font-size:12px;font-weight:700;background:#e5f4eb;color:#176e58;border:1px solid #b8decb;white-space:nowrap}
+.badge.warn{background:var(--warn-bg);color:var(--warn);border-color:#edc66b}
+.badge.bad{background:var(--red-bg);color:#a94745;border-color:#e8b5b0}
+.badge.none{background:#f1f3f1;color:var(--muted);border-color:var(--line)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px}
+.card b{display:block;font-size:26px}
+.table{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-size:12px;color:var(--muted);font-weight:650;text-align:start;padding:9px 8px;background:#f6f8f5;white-space:nowrap}
+td{padding:9px 8px;border-top:1px solid var(--line);vertical-align:middle}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.12em;background:#f6f8f5;border:1px dashed #b8decb;border-radius:8px;padding:3px 8px}
+.inline{display:flex;gap:6px;flex-wrap:wrap}
+.inline input{padding:7px 9px;border:1px solid var(--line);border-radius:8px;font:inherit;width:110px}
+.inline input[type=url]{width:200px}
+.search{padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;min-width:220px}
+.hidden{display:none!important}
+footer{color:var(--muted);font-size:12px;margin:18px 0 30px;text-align:center}
+@media (max-width:600px){.wrap{padding:12px}.panel{padding:14px}.search{min-width:0;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="index.html"><img src="assets/images/symbol-on-light.svg" alt=""><div><b id="brand-name">סטודיו לאוניד</b><span>LEONID STUDIO · ADMIN</span></div></a>
+    <div class="tools">
+      <a class="chip" href="espace.html" id="to-portal"></a>
+      <button class="chip" id="lang-btn" type="button"></button>
+      <button class="chip hidden" id="logout-btn" type="button"></button>
+    </div>
+  </header>
+  <main id="app" aria-live="polite"></main>
+  <footer id="footer"></footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://wddpkdxgyxunwgepudvy.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_BTt42V1aOdyifPsSdYp59g_NYZ4VS_B';
+
+const I18N = {
+  he:{dir:'rtl',other:'Русский',brand:'סטודיו לאוניד',portal:'אזור המתאמנים',logout:'יציאה',loading:'טוען…',
+    footer:'מערכת ניהול — נגישה רק לצוות. הקבלות החוקיות מופקות ב-Slate.',
+    loginTitle:'כניסת צוות',loginIntro:'כניסה למערכת הניהול של הסטודיו.',email:'דוא״ל',password:'סיסמה',login:'כניסה',
+    notStaffTitle:'אין הרשאת צוות',notStaffIntro:'החשבון הזה לא מוגדר כצוות. יש להוסיף אותו לטבלת staff ב-Supabase.',
+    errLogin:'דוא״ל או סיסמה שגויים.',errGeneric:'משהו השתבש. נסו שוב.',saved:'נשמר.',
+    members:'מתאמנים',newMember:'מתאמן חדש',search:'חיפוש לפי שם, טלפון או דוא״ל',
+    statActive:'מנויים פעילים',statSoon:'מסתיימים תוך 7 ימים',statExpired:'פג תוקף',statReceipts:'תשלומים בלי קבלה',
+    name:'שם מלא',nameRu:'שם ברוסית',phone:'טלפון',address:'כתובת',birth:'תאריך לידה',end:'סיום מנוי',status:'סטטוס',open:'לכרטיס',
+    active:'פעיל',soon:'מסתיים בקרוב',expired:'פג תוקף',noSub:'אין מנוי',daysLeft:'ימים',
+    addMember:'הוספת מתאמן',memberAdded:'המתאמן נוסף. מסרו לו את קוד ההפעלה.',duplicate:'כבר קיים מתאמן עם הדוא״ל הזה או עם הקוד הזה.',
+    back:'← לרשימה',details:'פרטים',save:'שמירה',activation:'הפעלת חשבון',linked:'החשבון מחובר',notLinked:'עדיין לא הפעיל חשבון',code:'קוד הפעלה',newCode:'קוד חדש',
+    shareCode:'שליחת הקוד ב-WhatsApp',
+    subs:'מנויים',plan:'סוג מנוי',start:'התחלה',endDate:'סיום',price:'מחיר',addSub:'הוספת מנוי / חידוש',
+    plans:{monthly:'חודשי',quarterly:'רבעוני',yearly:'שנתי',punch:'כרטיסייה'},
+    meas:'מדידות',date:'תאריך',height:'גובה (ס״מ)',weight:'משקל (ק״ג)',fat:'שומן (%)',muscle:'שריר (ק״ג)',water:'מים (%)',bmi:'BMI',addMeas:'הוספת מדידה',
+    pays:'תשלומים וקבלות',amount:'סכום (₪)',method:'אמצעי תשלום',desc:'תיאור',addPay:'רישום תשלום',receipt:'קבלה ב-Slate',
+    methods:['מזומן','ביט','העברה בנקאית','כרטיס'],monthly:'מנוי חודשי',
+    toIssue:'להפקה ב-Slate',issued:'הופקה · לשליחה',sent:'נשלחה',receiptNo:'מס׳ קבלה',openSlate:'פתיחת Slate',view:'צפייה',
+    sendWa:'שליחה ב-WhatsApp',resend:'שליחה שוב',fix:'תיקון',del:'מחיקה',confirmDel:'למחוק? (לא מוחק דבר ב-Slate)',
+    badReceipt:'יש להזין מספר קבלה וקישור שמתחיל ב-https://',noPhone:'אין מספר טלפון תקין למתאמן.',
+    none:'אין נתונים.',slateNote:'הקבלה החוקית מופקת ב-Slate. כאן רק רושמים את התשלום, מדביקים את מספר הקבלה והקישור, ושולחים למתאמן.'},
+  ru:{dir:'ltr',other:'עברית',brand:'Студия Леонида',portal:'Кабинет клиента',logout:'Выйти',loading:'Загрузка…',
+    footer:'Система управления — только для команды. Официальные квитанции оформляются в Slate.',
+    loginTitle:'Вход для команды',loginIntro:'Вход в систему управления студией.',email:'Эл. почта',password:'Пароль',login:'Войти',
+    notStaffTitle:'Нет прав команды',notStaffIntro:'Этот аккаунт не добавлен в команду. Добавьте его в таблицу staff в Supabase.',
+    errLogin:'Неверный e-mail или пароль.',errGeneric:'Что-то пошло не так. Попробуйте ещё раз.',saved:'Сохранено.',
+    members:'Клиенты',newMember:'Новый клиент',search:'Поиск по имени, телефону или e-mail',
+    statActive:'Активные абонементы',statSoon:'Заканчиваются за 7 дней',statExpired:'Истекли',statReceipts:'Платежи без квитанции',
+    name:'Имя (иврит)',nameRu:'Имя (рус.)',phone:'Телефон',address:'Адрес',birth:'Дата рождения',end:'Конец абонемента',status:'Статус',open:'Открыть',
+    active:'Активен',soon:'Скоро закончится',expired:'Истёк',noSub:'Нет абонемента',daysLeft:'дн.',
+    addMember:'Добавить клиента',memberAdded:'Клиент добавлен. Передайте ему код активации.',duplicate:'Клиент с таким e-mail или кодом уже есть.',
+    back:'← К списку',details:'Данные',save:'Сохранить',activation:'Активация аккаунта',linked:'Аккаунт подключён',notLinked:'Аккаунт ещё не активирован',code:'Код активации',newCode:'Новый код',
+    shareCode:'Отправить код в WhatsApp',
+    subs:'Абонементы',plan:'Тип',start:'Начало',endDate:'Конец',price:'Цена',addSub:'Добавить / продлить',
+    plans:{monthly:'Месячный',quarterly:'Квартальный',yearly:'Годовой',punch:'Карта посещений'},
+    meas:'Замеры',date:'Дата',height:'Рост (см)',weight:'Вес (кг)',fat:'Жир (%)',muscle:'Мышцы (кг)',water:'Вода (%)',bmi:'ИМТ',addMeas:'Добавить замер',
+    pays:'Платежи и квитанции',amount:'Сумма (₪)',method:'Способ оплаты',desc:'Описание',addPay:'Записать платёж',receipt:'Квитанция Slate',
+    methods:['מזומן','ביט','העברה בנקאית','כרטיס'],monthly:'מנוי חודשי',
+    toIssue:'Оформить в Slate',issued:'Оформлена · отправить',sent:'Отправлена',receiptNo:'№ квитанции',openSlate:'Открыть Slate',view:'Открыть',
+    sendWa:'Отправить в WhatsApp',resend:'Отправить снова',fix:'Исправить',del:'Удалить',confirmDel:'Удалить? (В Slate ничего не удаляется)',
+    badReceipt:'Укажите номер квитанции и ссылку, начинающуюся с https://',noPhone:'У клиента нет корректного номера телефона.',
+    none:'Нет данных.',slateNote:'Официальная квитанция оформляется в Slate. Здесь записывают платёж, вставляют номер и ссылку квитанции и отправляют клиенту.'}
+};
+let lang = (()=>{ try { return localStorage.getItem('leonid-lang') === 'ru' ? 'ru' : 'he'; } catch(_) { return 'he'; } })();
+const T = k => I18N[lang][k];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const app = document.getElementById('app');
+const todayISO = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset()*6e4).toISOString().slice(0,10); };
+const dayNum = iso => { const [y,m,d] = String(iso).split('-').map(Number); return Date.UTC(y, m-1, d); };
+const todayUTC = () => dayNum(todayISO());
+const addMonths = (iso, n) => { const [y,m,d] = iso.split('-').map(Number); const dt = new Date(Date.UTC(y, m-1+n, d)); if (dt.getUTCDate() !== d) dt.setUTCDate(0); dt.setUTCDate(dt.getUTCDate()-1); return dt.toISOString().slice(0,10); };
+const plusDays = (iso, n) => new Date(dayNum(iso) + n*864e5).toISOString().slice(0,10);
+const fmtDate = iso => iso ? String(iso).slice(0,10).split('-').reverse().join('/') : '—';
+const num = v => (v === null || v === undefined || v === '') ? '—' : Number(v).toLocaleString('he-IL', {maximumFractionDigits:1});
+const money = v => '₪' + Number(v).toLocaleString('he-IL', {minimumFractionDigits:2, maximumFractionDigits:2});
+const safeUrl = u => { try { const x = new URL(u); return x.protocol === 'https:' ? x.href : null; } catch(_) { return null; } };
+const waPhone = ph => { let d = String(ph||'').replace(/\D/g,''); if (d.startsWith('00')) d = d.slice(2); if (d.startsWith('0')) d = '972' + d.slice(1); return d.length >= 11 ? d : ''; };
+const newCode = () => { const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; const r = new Uint32Array(6); crypto.getRandomValues(r); return Array.from(r, x => a[x % a.length]).join(''); };
+const nameOf = m => (lang === 'ru' && m.full_name_ru) ? m.full_name_ru : m.full_name;
+const nullIfEmpty = v => { const s = String(v ?? '').trim(); return s === '' ? null : s; };
+const numOrNull = v => { const s = String(v ?? '').trim(); return s === '' ? null : Number(s); };
+
+let sb = null;
+try { if (window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) { console.error(e); }
+
+let S = { view:'loading', session:null, members:[], subs:[], meas:[], pays:[], codes:{}, selected:null, q:'', msg:null, busy:false };
+
+/* ---------- Données ---------- */
+async function loadAll(){
+  const [m, s, me, p, c] = await Promise.all([
+    sb.from('members').select('id, user_id, full_name, full_name_ru, email, phone, address, birth_date').order('full_name'),
+    sb.from('subscriptions').select('id, member_id, plan, start_date, end_date, price').order('end_date', { ascending:false }),
+    sb.from('measurements').select('id, member_id, measured_at, height_cm, weight_kg, fat_pct, muscle_kg, water_pct').order('measured_at', { ascending:false }),
+    sb.from('payments').select('id, member_id, paid_at, amount, method, description, status, slate_no, slate_url, sent_at').order('paid_at', { ascending:false }),
+    sb.rpc('staff_activation_codes')
+  ]);
+  for (const r of [m, s, me, p, c]) if (r.error) throw r.error;
+  S.members = m.data; S.subs = s.data; S.meas = me.data; S.pays = p.data;
+  S.codes = Object.fromEntries((c.data || []).map(x => [x.member_id, x.activation_code]));
+}
+const subOf = id => S.subs.find(s => s.member_id === id) || null;
+function subStatus(sub){
+  if (!sub) return { key:'none', left:null };
+  const left = Math.round((dayNum(sub.end_date) - todayUTC()) / 864e5);
+  return { key: left < 0 ? 'expired' : left <= 7 ? 'soon' : 'active', left };
+}
+const statusBadge = st => {
+  const cls = { active:'', soon:'warn', expired:'bad', none:'none' }[st.key];
+  const label = st.key === 'none' ? T('noSub') : T(st.key);
+  const extra = st.key === 'active' || st.key === 'soon' ? ` · ${st.left} ${T('daysLeft')}` : '';
+  return `<span class="badge ${cls}">${label}${extra}</span>`;
+};
+const payBadge = st => `<span class="badge ${st === 'toIssue' ? 'bad' : st === 'issued' ? 'warn' : ''}">${T(st)}</span>`;
+
+/* ---------- Rendu ---------- */
+function chrome(){
+  document.documentElement.lang = lang; document.documentElement.dir = T('dir');
+  document.getElementById('brand-name').textContent = T('brand');
+  document.getElementById('lang-btn').textContent = T('other');
+  document.getElementById('logout-btn').textContent = T('logout');
+  document.getElementById('to-portal').textContent = T('portal');
+  document.getElementById('footer').textContent = T('footer');
+  document.getElementById('logout-btn').classList.toggle('hidden', !S.session);
+}
+const msgHtml = () => S.msg ? `<div class="msg ${S.msg.type}" role="status">${esc(S.msg.text)}</div>` : '';
+
+function render(){
+  chrome();
+  if (S.view === 'loading') { app.innerHTML = `<p class="muted">${T('loading')}</p>`; return; }
+  if (S.view === 'login') {
+    app.innerHTML = `<div class="panel auth"><h1>${T('loginTitle')}</h1><p class="muted">${T('loginIntro')}</p>${msgHtml()}
+      <form id="login-form"><label class="field">${T('email')}<input name="email" type="email" dir="ltr" autocomplete="email" value="${esc(S.lastEmail || '')}" required></label>
+      <label class="field">${T('password')}<input name="password" type="password" dir="ltr" autocomplete="current-password" required></label>
+      <button class="btn" ${S.busy ? 'disabled' : ''}>${T('login')}</button></form></div>`;
+    return;
+  }
+  if (S.view === 'notstaff') { app.innerHTML = `<div class="panel auth"><h1>${T('notStaffTitle')}</h1><p class="muted">${T('notStaffIntro')}</p><p class="small muted" dir="ltr">${esc(S.session?.user?.email)}</p></div>`; return; }
+  if (S.view === 'list') { app.innerHTML = listHtml(); return; }
+  if (S.view === 'member') { app.innerHTML = memberHtml(); return; }
+}
+
+function listHtml(){
+  const q = S.q.trim().toLowerCase();
+  const rows = S.members.filter(m => !q || [m.full_name, m.full_name_ru, m.email, m.phone].some(v => String(v||'').toLowerCase().includes(q)));
+  const st = S.members.map(m => subStatus(subOf(m.id)).key);
+  const toIssue = S.pays.filter(p => p.status === 'toIssue').length, issued = S.pays.filter(p => p.status === 'issued').length;
+  return `${toIssue || issued ? `<div class="alert"><b>${T('statReceipts')}:</b> ${toIssue}${issued ? ` · ${T('issued')}: ${issued}` : ''}</div>` : ''}
+  <div class="cards">
+    <div class="card"><span class="muted small">${T('statActive')}</span><b>${st.filter(x => x === 'active' || x === 'soon').length}</b></div>
+    <div class="card"><span class="muted small">${T('statSoon')}</span><b>${st.filter(x => x === 'soon').length}</b></div>
+    <div class="card"><span class="muted small">${T('statExpired')}</span><b>${st.filter(x => x === 'expired').length}</b></div>
+    <div class="card"><span class="muted small">${T('statReceipts')}</span><b>${toIssue}</b></div>
+  </div>
+  <section class="panel"><div class="row between"><h2>${T('members')} · ${S.members.length}</h2>
+    <input class="search" id="search" type="search" placeholder="${T('search')}" value="${esc(S.q)}"></div>
+    <div class="table"><table><thead><tr><th>${T('name')}</th><th>${T('phone')}</th><th>${T('end')}</th><th>${T('status')}</th><th></th></tr></thead><tbody>
+    ${rows.map(m => { const sub = subOf(m.id); return `<tr><td><button class="link" data-open="${m.id}">${esc(nameOf(m))}</button>${m.user_id ? '' : ` <span class="badge none">${T('notLinked')}</span>`}</td><td><bdi>${esc(m.phone || '—')}</bdi></td><td>${fmtDate(sub?.end_date)}</td><td>${statusBadge(subStatus(sub))}</td><td><button class="btn alt sm" data-open="${m.id}">${T('open')}</button></td></tr>`; }).join('') || `<tr><td colspan="5" class="muted">${T('none')}</td></tr>`}
+    </tbody></table></div></section>
+  <section class="panel"><h2>${T('newMember')}</h2>${S.msg && S.msg.where === 'new' ? msgHtml() : ''}
+    <form id="new-member" class="form">
+      <label class="field">${T('name')}<input name="full_name" required></label>
+      <label class="field">${T('nameRu')}<input name="full_name_ru"></label>
+      <label class="field">${T('email')}<input name="email" type="email" dir="ltr" required></label>
+      <label class="field">${T('phone')}<input name="phone" type="tel" dir="ltr" placeholder="05X-XXX-XXXX"></label>
+      <label class="field">${T('address')}<input name="address"></label>
+      <label class="field">${T('birth')}<input name="birth_date" type="date"></label>
+      <button class="btn" ${S.busy ? 'disabled' : ''}>${T('addMember')}</button>
+    </form></section>`;
+}
+
+function memberHtml(){
+  const m = S.members.find(x => x.id === S.selected); if (!m) { S.view = 'list'; return listHtml(); }
+  const subs = S.subs.filter(s => s.member_id === m.id), meas = S.meas.filter(x => x.member_id === m.id), pays = S.pays.filter(p => p.member_id === m.id);
+  const lastSub = subs[0], code = S.codes[m.id];
+  const nextStart = lastSub && dayNum(lastSub.end_date) >= todayUTC() ? plusDays(lastSub.end_date, 1) : todayISO();
+  const lastH = meas.find(x => x.height_cm)?.height_cm ?? '';
+  const inp = (name, label, type='text', val='', extra='') => `<label class="field">${label}<input name="${name}" type="${type}" value="${esc(val)}" ${extra}></label>`;
+  const bmi = x => { const h = x.height_cm || lastH; return (x.weight_kg && h) ? num(x.weight_kg / ((h/100)**2)) : '—'; };
+  return `<p><button class="link" id="back">${T('back')}</button></p>
+  <div class="row between"><h1>${esc(nameOf(m))}</h1>${statusBadge(subStatus(lastSub))}</div>${S.msg ? msgHtml() : ''}
+
+  <section class="panel"><h2>${T('activation')}</h2>
+    ${m.user_id ? `<span class="badge">✓ ${T('linked')}</span>`
+      : `<div class="row"><span class="badge none">${T('notLinked')}</span>${code ? `<span>${T('code')}: <span class="code" dir="ltr">${esc(code)}</span></span> <button class="btn wa sm" data-act="share-code">${T('shareCode')}</button>` : ''}<button class="link" data-act="new-code">${T('newCode')}</button></div>`}
+  </section>
+
+  <section class="panel"><h2>${T('details')}</h2>
+    <form id="edit-member" class="form">
+      ${inp('full_name', T('name'), 'text', m.full_name, 'required')}${inp('full_name_ru', T('nameRu'), 'text', m.full_name_ru || '')}
+      ${inp('email', T('email'), 'email', m.email, 'dir="ltr" required')}${inp('phone', T('phone'), 'tel', m.phone || '', 'dir="ltr"')}
+      ${inp('address', T('address'), 'text', m.address || '')}${inp('birth_date', T('birth'), 'date', m.birth_date || '')}
+      <button class="btn">${T('save')}</button></form></section>
+
+  <section class="panel"><h2>${T('subs')}</h2>
+    <form id="add-sub" class="form">
+      <label class="field">${T('plan')}<select name="plan">${Object.entries(T('plans')).map(([k,v]) => `<option value="${k}">${v}</option>`).join('')}</select></label>
+      ${inp('start_date', T('start'), 'date', nextStart, 'required')}${inp('end_date', T('endDate'), 'date', addMonths(nextStart, 1), 'required')}
+      ${inp('price', T('price'), 'number', '150', 'min="0" step="0.01"')}
+      <button class="btn">${T('addSub')}</button></form>
+    ${subs.length ? `<div class="table" style="margin-top:12px"><table><thead><tr><th>${T('plan')}</th><th>${T('start')}</th><th>${T('endDate')}</th><th>${T('price')}</th><th>${T('status')}</th><th></th></tr></thead><tbody>
+      ${subs.map(s => `<tr><td>${esc(T('plans')[s.plan] || s.plan)}</td><td>${fmtDate(s.start_date)}</td><td>${fmtDate(s.end_date)}</td><td>${s.price != null ? money(s.price) : '—'}</td><td>${statusBadge(subStatus(s))}</td><td><button class="link danger" data-del-sub="${s.id}">${T('del')}</button></td></tr>`).join('')}
+    </tbody></table></div>` : ''}</section>
+
+  <section class="panel"><h2>${T('meas')}</h2>
+    <form id="add-meas" class="form">
+      ${inp('measured_at', T('date'), 'date', todayISO(), 'required')}${inp('height_cm', T('height'), 'number', lastH, 'step="0.1" min="50" max="250"')}
+      ${inp('weight_kg', T('weight'), 'number', '', 'step="0.1" min="20" max="300" required')}${inp('fat_pct', T('fat'), 'number', '', 'step="0.1" min="0" max="80"')}
+      ${inp('muscle_kg', T('muscle'), 'number', '', 'step="0.1" min="0" max="150"')}${inp('water_pct', T('water'), 'number', '', 'step="0.1" min="0" max="100"')}
+      <button class="btn">${T('addMeas')}</button></form>
+    ${meas.length ? `<div class="table" style="margin-top:12px"><table><thead><tr><th>${T('date')}</th><th>${T('weight')}</th><th>${T('bmi')}</th><th>${T('fat')}</th><th>${T('muscle')}</th><th>${T('water')}</th><th></th></tr></thead><tbody>
+      ${meas.map(x => `<tr><td>${fmtDate(x.measured_at)}</td><td>${num(x.weight_kg)}</td><td>${bmi(x)}</td><td>${num(x.fat_pct)}</td><td>${num(x.muscle_kg)}</td><td>${num(x.water_pct)}</td><td><button class="link danger" data-del-meas="${x.id}">${T('del')}</button></td></tr>`).join('')}
+    </tbody></table></div>` : ''}</section>
+
+  <section class="panel"><h2>${T('pays')}</h2><p class="muted small">${T('slateNote')}</p>
+    <form id="add-pay" class="form">
+      ${inp('amount', T('amount'), 'number', lastSub?.price ?? 150, 'min="1" step="0.01" required')}
+      <label class="field">${T('method')}<select name="method">${T('methods').map(x => `<option>${x}</option>`).join('')}</select></label>
+      ${inp('paid_at', T('date'), 'date', todayISO(), 'required')}${inp('description', T('desc'), 'text', T('monthly'))}
+      <button class="btn">${T('addPay')}</button></form>
+    ${pays.length ? `<div class="table" style="margin-top:12px"><table><thead><tr><th>${T('date')}</th><th>${T('amount')}</th><th>${T('status')}</th><th>${T('receipt')}</th><th></th></tr></thead><tbody>
+      ${pays.map(p => payRow(p)).join('')}
+    </tbody></table></div>` : ''}</section>`;
+}
+
+function payRow(p){
+  const url = safeUrl(p.slate_url);
+  if (p.status === 'toIssue') return `<tr><td>${fmtDate(p.paid_at)}</td><td>${money(p.amount)}</td><td>${payBadge(p.status)}</td>
+    <td><form class="inline" data-receipt="${p.id}"><input name="slate_no" placeholder="${T('receiptNo')}" required><input name="slate_url" type="url" placeholder="https://..." required><button class="btn sm">${T('save')}</button></form></td>
+    <td><a class="btn alt sm" href="https://app.slate.co.il" target="_blank" rel="noopener">${T('openSlate')}</a> <button class="link danger" data-del-pay="${p.id}">${T('del')}</button></td></tr>`;
+  return `<tr><td>${fmtDate(p.paid_at)}</td><td>${money(p.amount)}</td><td>${payBadge(p.status)}</td>
+    <td><bdi>${esc(p.slate_no || '')}</bdi>${url ? ` · <a href="${esc(url)}" target="_blank" rel="noopener">${T('view')}</a>` : ''}</td>
+    <td><button class="btn wa sm" data-wa="${p.id}">${p.status === 'sent' ? T('resend') : T('sendWa')}</button> <button class="link" data-fix="${p.id}">${T('fix')}</button></td></tr>`;
+}
+
+/* ---------- Actions ---------- */
+async function run(fn, okMsg){
+  S.busy = true; S.msg = null;
+  try { await fn(); await loadAll(); if (okMsg) S.msg = { type:'ok', text: okMsg, where: S.view === 'list' ? 'new' : 'member' }; }
+  catch (e) { console.error(e); const dup = String(e?.code) === '23505'; S.msg = { type:'err', text: dup ? T('duplicate') : T('errGeneric'), where: S.view === 'list' ? 'new' : 'member' }; }
+  S.busy = false; render();
+}
+const formObj = f => Object.fromEntries(new FormData(f).entries());
+
+app.addEventListener('submit', async e => {
+  const f = e.target; e.preventDefault();
+  const d = formObj(f);
+  if (f.id === 'login-form') return login(d.email.trim(), d.password);
+  if (f.id === 'new-member') {
+    let newId = null;
+    await run(async () => {
+      const { data, error } = await sb.from('members').insert({ full_name:d.full_name.trim(), full_name_ru:nullIfEmpty(d.full_name_ru), email:d.email.trim().toLowerCase(), phone:nullIfEmpty(d.phone), address:nullIfEmpty(d.address), birth_date:nullIfEmpty(d.birth_date), activation_code:newCode() }).select('id').single();
+      if (error) throw error; newId = data.id;
+    }, T('memberAdded'));
+    if (newId && S.msg?.type === 'ok') { S.selected = newId; S.view = 'member'; render(); }
+    return;
+  }
+  const id = S.selected;
+  if (f.id === 'edit-member') return run(async () => { const { error } = await sb.from('members').update({ full_name:d.full_name.trim(), full_name_ru:nullIfEmpty(d.full_name_ru), email:d.email.trim().toLowerCase(), phone:nullIfEmpty(d.phone), address:nullIfEmpty(d.address), birth_date:nullIfEmpty(d.birth_date) }).eq('id', id); if (error) throw error; }, T('saved'));
+  if (f.id === 'add-sub') return run(async () => { const { error } = await sb.from('subscriptions').insert({ member_id:id, plan:d.plan, start_date:d.start_date, end_date:d.end_date, price:numOrNull(d.price) }); if (error) throw error; }, T('saved'));
+  if (f.id === 'add-meas') return run(async () => { const { error } = await sb.from('measurements').insert({ member_id:id, measured_at:d.measured_at, height_cm:numOrNull(d.height_cm), weight_kg:numOrNull(d.weight_kg), fat_pct:numOrNull(d.fat_pct), muscle_kg:numOrNull(d.muscle_kg), water_pct:numOrNull(d.water_pct) }); if (error) throw error; }, T('saved'));
+  if (f.id === 'add-pay') return run(async () => { const { error } = await sb.from('payments').insert({ member_id:id, amount:Number(d.amount), method:d.method, paid_at:d.paid_at, description:nullIfEmpty(d.description), status:'toIssue' }); if (error) throw error; }, T('saved'));
+  if (f.dataset.receipt) {
+    const no = String(d.slate_no || '').trim(), url = safeUrl(String(d.slate_url || '').trim());
+    if (!no || !url) { S.msg = { type:'err', text:T('badReceipt') }; render(); return; }
+    return run(async () => { const { error } = await sb.from('payments').update({ slate_no:no, slate_url:url, status:'issued' }).eq('id', f.dataset.receipt); if (error) throw error; }, T('saved'));
+  }
+});
+
+app.addEventListener('click', async e => {
+  const b = e.target.closest('button, a'); if (!b) return;
+  if (b.dataset.open) { S.selected = b.dataset.open; S.view = 'member'; S.msg = null; render(); window.scrollTo(0,0); return; }
+  if (b.id === 'back') { S.view = 'list'; S.msg = null; render(); return; }
+  const id = S.selected, m = S.members.find(x => x.id === id);
+  if (b.dataset.act === 'new-code') return run(async () => { const { error } = await sb.from('members').update({ activation_code:newCode() }).eq('id', id); if (error) throw error; }, T('saved'));
+  if (b.dataset.act === 'share-code') {
+    const phone = waPhone(m?.phone); if (!phone) { alert(T('noPhone')); return; }
+    const link = new URL('espace.html', location.href).href;
+    const text = `שלום ${m.full_name},\nלכניסה לאזור האישי שלך בסטודיו לאוניד:\n${link}\nיוצרים חשבון עם הדוא״ל ${m.email} ומזינים את קוד ההפעלה: ${S.codes[id]}`;
+    window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(text), '_blank', 'noopener'); return;
+  }
+  if (b.dataset.wa) {
+    const p = S.pays.find(x => x.id === b.dataset.wa), phone = waPhone(m?.phone), url = safeUrl(p?.slate_url);
+    if (!phone) { alert(T('noPhone')); return; } if (!url) return;
+    const text = `שלום ${m.full_name},\nמצורפת הקבלה מס׳ ${p.slate_no} על סך ${money(p.amount)} עבור ${p.description || 'מנוי'}:\n${url}\nתודה, סטודיו לאוניד`;
+    window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
+    return run(async () => { const { error } = await sb.from('payments').update({ status:'sent', sent_at:todayISO() }).eq('id', p.id); if (error) throw error; });
+  }
+  if (b.dataset.fix) return run(async () => { const { error } = await sb.from('payments').update({ status:'toIssue', slate_no:null, slate_url:null, sent_at:null }).eq('id', b.dataset.fix); if (error) throw error; });
+  const del = (table, key) => run(async () => { const { error } = await sb.from(table).delete().eq('id', key); if (error) throw error; }, T('saved'));
+  if (b.dataset.delPay) { const p = S.pays.find(x => x.id === b.dataset.delPay); if (p?.status === 'toIssue' && confirm(T('confirmDel'))) return del('payments', p.id); return; }
+  if (b.dataset.delMeas) { if (confirm(T('confirmDel'))) return del('measurements', b.dataset.delMeas); return; }
+  if (b.dataset.delSub) { if (confirm(T('confirmDel'))) return del('subscriptions', b.dataset.delSub); return; }
+});
+
+app.addEventListener('input', e => { if (e.target.id === 'search') { S.q = e.target.value; const pos = e.target.selectionStart; render(); const s = document.getElementById('search'); s.focus(); s.setSelectionRange(pos, pos); } });
+app.addEventListener('change', e => {
+  const f = e.target.form; if (!f || f.id !== 'add-sub') return;
+  if (e.target.name === 'plan' || e.target.name === 'start_date') {
+    const months = { monthly:1, quarterly:3, yearly:12, punch:1 }[f.plan.value] || 1;
+    if (f.start_date.value) f.end_date.value = addMonths(f.start_date.value, months);
+  }
+});
+
+async function login(email, password){
+  S.lastEmail = email; S.busy = true; S.msg = null; render();
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  S.busy = false;
+  if (error || !data.session) { S.msg = { type:'err', text:T('errLogin') }; render(); return; }
+  S.session = data.session; await enter();
+}
+async function enter(){
+  S.view = 'loading'; render();
+  const { data: staff, error } = await sb.rpc('is_staff');
+  if (error || staff !== true) { S.view = 'notstaff'; render(); return; }
+  try { await loadAll(); S.view = 'list'; } catch (e) { console.error(e); S.msg = { type:'err', text:T('errGeneric') }; S.view = 'login'; }
+  render();
+}
+
+document.getElementById('lang-btn').addEventListener('click', () => { lang = lang === 'he' ? 'ru' : 'he'; try { localStorage.setItem('leonid-lang', lang); } catch(_) {} render(); });
+document.getElementById('logout-btn').addEventListener('click', async () => { await sb.auth.signOut(); S = { ...S, view:'login', session:null, members:[], subs:[], meas:[], pays:[], codes:{}, selected:null, msg:null }; render(); });
+
+(async () => {
+  if (!sb) { S.view = 'login'; S.msg = { type:'err', text:T('errGeneric') }; render(); return; }
+  const { data } = await sb.auth.getSession(); S.session = data.session;
+  if (S.session) await enter(); else { S.view = 'login'; render(); }
+})();
+</script>
+</body>
+</html>

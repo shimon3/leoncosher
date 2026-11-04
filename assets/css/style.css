@@ -166,3 +166,8 @@
 .whatsapp-btn{background:#1f8f4e;border-color:#1f8f4e;color:#fff}
 .slate-steps{margin:0 0 14px;padding-inline-start:20px;line-height:1.7}
 a.btn{display:inline-block;text-decoration:none}
+
+/* Liens vers l'espace adhérent et la gestion (Supabase) */
+.access-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.access-links a{display:inline-block;border:1px solid #b8decb;background:var(--mint);color:var(--green);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;text-decoration:none}
+.access-links a:hover{background:#dcefe4}

@@ -36,9 +36,9 @@ Chaque adhérent se connecte et voit **uniquement** ses données : abonnement (j
 
 Codes de démo : `DAVID1`, `DANIEL`, `NOA123`, `MICHAL`, `YOSSI1` (chacun utilisable une seule fois, avec l'e-mail correspondant).
 
-### Ajouter un adhérent réel
+### Gestion par l'équipe — `admin.html`
 
-Dans **Table Editor → members** : `full_name`, `email`, `phone`, `address`, `birth_date` et un `activation_code` (ex. 6 lettres/chiffres). Donner le code à l'adhérent : il crée son compte avec **le même e-mail**, puis saisit le code.
+Leonid se connecte sur `/admin.html` (compte présent dans la table `staff`) : liste des adhérents avec statut d'abonnement, ajout d'un adhérent (un code d'activation est généré, envoyable par WhatsApp), fiche avec coordonnées, abonnements (renouvellement), mesures (IMC calculé) et paiements (numéro + lien du reçu Slate, envoi WhatsApp). Tout est enregistré dans Supabase et apparaît aussitôt dans l'espace de l'adhérent.
 
 ### Donner les droits d'équipe (Leonid)
 
