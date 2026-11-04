@@ -52,6 +52,7 @@ td{padding:9px 8px;border-top:1px solid var(--line);vertical-align:middle}
 .inline input{padding:7px 9px;border:1px solid var(--line);border-radius:8px;font:inherit;width:110px}
 .inline input[type=url]{width:200px}
 .search{padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;min-width:220px}
+#pay-filter{padding:8px 10px;border:1px solid var(--line);border-radius:10px;font:inherit;color:var(--ink);background:#fbfcfa}
 .hidden{display:none!important}
 footer{color:var(--muted);font-size:12px;margin:18px 0 30px;text-align:center}
 @media (max-width:600px){.wrap{padding:12px}.panel{padding:14px}.search{min-width:0;width:100%}}
@@ -101,7 +102,7 @@ const I18N = {
     roleAdmin:'מנהל אתר',roleCoach:'מאמן',team:'צוות',teamIntro:'מוסיפים מאמן אחרי שיצר חשבון ב-אזור המתאמנים עם הדוא״ל שלו.',role:'תפקיד',addStaff:'הוספה לצוות',removeStaff:'הסרה',you:'(את/ה)',
     staffRes:{ok:'הצוות עודכן.',no_account:'אין חשבון עם הדוא״ל הזה. בקשו ממנו ליצור חשבון קודם באזור המתאמנים.',self:'אי אפשר לשנות את התפקיד של עצמך.',not_admin:'רק מנהל אתר יכול לנהל את הצוות.',bad_role:'תפקיד לא תקין.'},
     delMember:'מחיקת המתאמן',confirmDelMember:'למחוק את המתאמן וכל הנתונים שלו (מנויים, מדידות, תשלומים)? אי אפשר לבטל.',memberDeleted:'המתאמן נמחק.',
-    none:'אין נתונים.',slateNote:'הקבלה החוקית מופקת ב-Slate. כאן רק רושמים את התשלום, מדביקים את מספר הקבלה והקישור, ושולחים למתאמן.'},
+    allPays:'כל התשלומים והקבלות',member:'מתאמן',showAll:'הצגת הכל',onlyOpen:'רק ממתינים לקבלה',goPays:'לטיפול ←',none:'אין נתונים.',slateNote:'הקבלה החוקית מופקת ב-Slate. כאן רק רושמים את התשלום, מדביקים את מספר הקבלה והקישור, ושולחים למתאמן.'},
   ru:{dir:'ltr',other:'עברית',brand:'Студия Леонида',portal:'Кабинет клиента',logout:'Выйти',loading:'Загрузка…',
     footer:'Система управления — только для команды. Официальные квитанции оформляются в Slate.',
     loginTitle:'Вход для команды',loginIntro:'Вход в систему управления студией.',email:'Эл. почта',password:'Пароль',login:'Войти',
@@ -125,7 +126,7 @@ const I18N = {
     roleAdmin:'Администратор сайта',roleCoach:'Тренер',team:'Команда',teamIntro:'Добавьте тренера после того, как он создал аккаунт в кабинете клиента со своим e-mail.',role:'Роль',addStaff:'Добавить в команду',removeStaff:'Убрать',you:'(вы)',
     staffRes:{ok:'Команда обновлена.',no_account:'Нет аккаунта с этим e-mail. Пусть он сначала создаст аккаунт в кабинете клиента.',self:'Нельзя изменить свою роль.',not_admin:'Только администратор может управлять командой.',bad_role:'Неверная роль.'},
     delMember:'Удалить клиента',confirmDelMember:'Удалить клиента и все его данные (абонементы, замеры, платежи)? Отменить нельзя.',memberDeleted:'Клиент удалён.',
-    none:'Нет данных.',slateNote:'Официальная квитанция оформляется в Slate. Здесь записывают платёж, вставляют номер и ссылку квитанции и отправляют клиенту.'}
+    allPays:'Все платежи и квитанции',member:'Клиент',showAll:'Показать все',onlyOpen:'Только без квитанции',goPays:'Перейти →',none:'Нет данных.',slateNote:'Официальная квитанция оформляется в Slate. Здесь записывают платёж, вставляют номер и ссылку квитанции и отправляют клиенту.'}
 };
 let lang = (()=>{ try { return localStorage.getItem('leonid-lang') === 'ru' ? 'ru' : 'he'; } catch(_) { return 'he'; } })();
 const T = k => I18N[lang][k];
@@ -149,7 +150,7 @@ const numOrNull = v => { const s = String(v ?? '').trim(); return s === '' ? nul
 let sb = null;
 try { if (window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) { console.error(e); }
 
-let S = { view:'loading', session:null, role:null, team:[], members:[], subs:[], meas:[], pays:[], codes:{}, selected:null, q:'', msg:null, busy:false };
+let S = { view:'loading', session:null, role:null, team:[], members:[], subs:[], meas:[], pays:[], codes:{}, selected:null, q:'', payFilter:'all', msg:null, busy:false };
 const isAdmin = () => S.role === 'admin';
 
 /* ---------- Données ---------- */
@@ -213,7 +214,7 @@ function listHtml(){
   const rows = S.members.filter(m => !q || [m.full_name, m.full_name_ru, m.email, m.phone].some(v => String(v||'').toLowerCase().includes(q)));
   const st = S.members.map(m => subStatus(subOf(m.id)).key);
   const toIssue = S.pays.filter(p => p.status === 'toIssue').length, issued = S.pays.filter(p => p.status === 'issued').length;
-  return `${toIssue || issued ? `<div class="alert"><b>${T('statReceipts')}:</b> ${toIssue}${issued ? ` · ${T('issued')}: ${issued}` : ''}</div>` : ''}
+  return `${toIssue || issued ? `<div class="alert row between"><span><b>${T('statReceipts')}:</b> ${toIssue}${issued ? ` · ${T('issued')}: ${issued}` : ''}</span><button class="link" data-act="go-pays">${T('goPays')}</button></div>` : ''}
   <div class="cards">
     <div class="card"><span class="muted small">${T('statActive')}</span><b>${st.filter(x => x === 'active' || x === 'soon').length}</b></div>
     <div class="card"><span class="muted small">${T('statSoon')}</span><b>${st.filter(x => x === 'soon').length}</b></div>
@@ -225,6 +226,7 @@ function listHtml(){
     <div class="table"><table><thead><tr><th>${T('name')}</th><th>${T('phone')}</th><th>${T('end')}</th><th>${T('status')}</th><th></th></tr></thead><tbody>
     ${rows.map(m => { const sub = subOf(m.id); return `<tr><td><button class="link" data-open="${m.id}">${esc(nameOf(m))}</button>${m.user_id ? '' : ` <span class="badge none">${T('notLinked')}</span>`}</td><td><bdi>${esc(m.phone || '—')}</bdi></td><td>${fmtDate(sub?.end_date)}</td><td>${statusBadge(subStatus(sub))}</td><td><button class="btn alt sm" data-open="${m.id}">${T('open')}</button></td></tr>`; }).join('') || `<tr><td colspan="5" class="muted">${T('none')}</td></tr>`}
     </tbody></table></div></section>
+  ${allPaysHtml()}
   <section class="panel"><h2>${T('newMember')}</h2>${S.msg && S.msg.where === 'new' ? msgHtml() : ''}
     <form id="new-member" class="form">
       <label class="field">${T('name')}<input name="full_name" required></label>
@@ -235,6 +237,21 @@ function listHtml(){
       <label class="field">${T('birth')}<input name="birth_date" type="date"></label>
       <button class="btn" ${S.busy ? 'disabled' : ''}>${T('addMember')}</button>
     </form></section>${isAdmin() ? teamHtml() : ''}`;
+}
+
+function allPaysHtml(){
+  const byId = Object.fromEntries(S.members.map(m => [m.id, m]));
+  const rank = { toIssue:0, issued:1, sent:2 };
+  const list = S.pays.filter(p => S.payFilter === 'all' || p.status !== 'sent')
+    .slice().sort((a,b) => (rank[a.status] - rank[b.status]) || String(b.paid_at).localeCompare(String(a.paid_at)));
+  return `<section class="panel" id="all-pays"><div class="row between"><h2>${T('allPays')} · ${S.pays.length}</h2>
+    <select id="pay-filter"><option value="all" ${S.payFilter === 'all' ? 'selected' : ''}>${T('showAll')}</option><option value="open" ${S.payFilter === 'open' ? 'selected' : ''}>${T('onlyOpen')}</option></select></div>
+    <div class="table"><table><thead><tr><th>${T('date')}</th><th>${T('member')}</th><th>${T('amount')}</th><th>${T('status')}</th><th>${T('receiptNo')}</th><th></th></tr></thead><tbody>
+    ${list.map(p => { const m = byId[p.member_id]; const url = safeUrl(p.slate_url); return `<tr><td>${fmtDate(p.paid_at)}</td>
+      <td>${m ? `<button class="link" data-open="${m.id}">${esc(nameOf(m))}</button>` : '—'}</td><td>${money(p.amount)}</td><td>${payBadge(p.status)}</td>
+      <td><bdi>${esc(p.slate_no || '—')}</bdi>${url ? ` · <a href="${esc(url)}" target="_blank" rel="noopener">${T('view')}</a>` : ''}</td>
+      <td>${m ? `<button class="btn alt sm" data-open="${m.id}">${T('open')}</button>` : ''}</td></tr>`; }).join('') || `<tr><td colspan="6" class="muted">${T('none')}</td></tr>`}
+    </tbody></table></div></section>`;
 }
 
 function teamHtml(){
@@ -360,6 +377,7 @@ app.addEventListener('click', async e => {
   const b = e.target.closest('button, a'); if (!b) return;
   if (b.dataset.open) { S.selected = b.dataset.open; S.view = 'member'; S.msg = null; render(); window.scrollTo(0,0); return; }
   if (b.id === 'back') { S.view = 'list'; S.msg = null; render(); return; }
+  if (b.dataset.act === 'go-pays') { S.payFilter = 'open'; render(); document.getElementById('all-pays')?.scrollIntoView({ behavior:'smooth' }); return; }
   if (b.dataset.rmStaff) { if (confirm(T('removeStaff') + '?')) return staffAction(sb.rpc('admin_remove_staff', { target:b.dataset.rmStaff })); return; }
   const id = S.selected, m = S.members.find(x => x.id === id);
   if (b.dataset.act === 'del-member') {
@@ -391,6 +409,7 @@ app.addEventListener('click', async e => {
 
 app.addEventListener('input', e => { if (e.target.id === 'search') { S.q = e.target.value; const pos = e.target.selectionStart; render(); const s = document.getElementById('search'); s.focus(); s.setSelectionRange(pos, pos); } });
 app.addEventListener('change', e => {
+  if (e.target.id === 'pay-filter') { S.payFilter = e.target.value; render(); return; }
   const f = e.target.form; if (!f || f.id !== 'add-sub') return;
   if (e.target.name === 'plan' || e.target.name === 'start_date') {
     const months = { monthly:1, quarterly:3, yearly:12, punch:1 }[f.plan.value] || 1;
