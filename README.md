@@ -10,11 +10,13 @@ Le site est statique. Pour tester depuis un navigateur, lancez un serveur local 
 python -m http.server 8080
 ```
 
-Ouvrez ensuite `http://localhost:8080/`. Le point d’entrée est `index.html`.
+Ouvrez ensuite `http://localhost:8080/`. La racine redirige vers l’espace adhérent (`espace.html`). La maquette de démo est sur `demo.html`, la gestion sur `admin.html` (pages non liées publiquement, `noindex`).
 
 ## Fichiers
 
-- `index.html` : structure du site.
+- `index.html` : redirige vers `espace.html` (seule page publique).
+- `demo.html` : maquette de démonstration (non liée, `noindex`).
+- `admin.html` : gestion pour l’équipe (non liée, `noindex`, données protégées par RLS).
 - `assets/css/style.css` : styles et responsive.
 - `assets/js/health.js` : fonctions de déclaration de santé.
 - `assets/js/app.js` : logique de la maquette.
