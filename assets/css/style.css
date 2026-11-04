@@ -156,3 +156,13 @@
  .measurement-history-scroll::-webkit-scrollbar-track,
  .receipt-ledger-scroll::-webkit-scrollbar-track{background:#e9f4ee}
 }
+
+/* Phase 1 Slate : reçus émis dans Slate, liés et envoyés depuis le site */
+.receipt-alert{background:#fbeae8;border:1px solid #e8b5b0;color:#7d2f2c;padding:12px 14px;border-radius:10px;margin-bottom:16px}
+.receipt-alert .link{margin-inline-start:6px}
+.receipt-link-form{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.receipt-link-form input{min-width:0;width:110px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;font:inherit}
+.receipt-link-form input[type=url]{width:190px}
+.whatsapp-btn{background:#1f8f4e;border-color:#1f8f4e;color:#fff}
+.slate-steps{margin:0 0 14px;padding-inline-start:20px;line-height:1.7}
+a.btn{display:inline-block;text-decoration:none}
