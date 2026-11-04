@@ -42,13 +42,23 @@ Codes de démo : `DAVID1`, `DANIEL`, `NOA123`, `MICHAL`, `YOSSI1` (chacun utilis
 
 Leonid se connecte sur `/admin.html` (compte présent dans la table `staff`) : liste des adhérents avec statut d'abonnement, ajout d'un adhérent (un code d'activation est généré, envoyable par WhatsApp), fiche avec coordonnées, abonnements (renouvellement), mesures (IMC calculé) et paiements (numéro + lien du reçu Slate, envoi WhatsApp). Tout est enregistré dans Supabase et apparaît aussitôt dans l'espace de l'adhérent.
 
-### Donner les droits d'équipe (Leonid)
+### Rôles : adhérent, coach, admin
 
-Après avoir créé son compte dans `/espace.html` :
+Exécuter aussi `supabase/002_roles.sql` (après `schema.sql`).
+
+- **Adhérent** : voit uniquement ses données dans `espace.html`.
+- **Coach** (Leonid) : gère adhérents, abonnements, mesures, paiements dans `admin.html`.
+- **Admin** (Samuel) : comme le coach + gestion de l'équipe (ajouter/retirer un coach, section « צוות ») + suppression d'adhérents.
+
+Premier admin (une seule fois, après avoir créé son compte dans `espace.html`) :
 
 ```sql
-insert into public.staff (user_id) select id from auth.users where email = 'adresse.de.leonid@example.com';
+insert into public.staff (user_id, role)
+select id, 'admin' from auth.users where email = 'ton.email@example.com'
+on conflict (user_id) do update set role = 'admin';
 ```
+
+Ensuite, l'admin ajoute Leonid comme coach depuis `admin.html` → « צוות » (Leonid doit d'abord créer son compte dans `espace.html`).
 
 ### Avant les vraies données
 

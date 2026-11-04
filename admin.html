@@ -64,6 +64,7 @@ footer{color:var(--muted);font-size:12px;margin:18px 0 30px;text-align:center}
     <div class="tools">
       <a class="chip" href="espace.html" id="to-portal"></a>
       <button class="chip" id="lang-btn" type="button"></button>
+      <span class="chip hidden" id="role-chip"></span>
       <button class="chip hidden" id="logout-btn" type="button"></button>
     </div>
   </header>
@@ -97,6 +98,9 @@ const I18N = {
     toIssue:'להפקה ב-Slate',issued:'הופקה · לשליחה',sent:'נשלחה',receiptNo:'מס׳ קבלה',openSlate:'פתיחת Slate',view:'צפייה',
     sendWa:'שליחה ב-WhatsApp',resend:'שליחה שוב',fix:'תיקון',del:'מחיקה',confirmDel:'למחוק? (לא מוחק דבר ב-Slate)',
     badReceipt:'יש להזין מספר קבלה וקישור שמתחיל ב-https://',noPhone:'אין מספר טלפון תקין למתאמן.',
+    roleAdmin:'מנהל אתר',roleCoach:'מאמן',team:'צוות',teamIntro:'מוסיפים מאמן אחרי שיצר חשבון ב-אזור המתאמנים עם הדוא״ל שלו.',role:'תפקיד',addStaff:'הוספה לצוות',removeStaff:'הסרה',you:'(את/ה)',
+    staffRes:{ok:'הצוות עודכן.',no_account:'אין חשבון עם הדוא״ל הזה. בקשו ממנו ליצור חשבון קודם באזור המתאמנים.',self:'אי אפשר לשנות את התפקיד של עצמך.',not_admin:'רק מנהל אתר יכול לנהל את הצוות.',bad_role:'תפקיד לא תקין.'},
+    delMember:'מחיקת המתאמן',confirmDelMember:'למחוק את המתאמן וכל הנתונים שלו (מנויים, מדידות, תשלומים)? אי אפשר לבטל.',memberDeleted:'המתאמן נמחק.',
     none:'אין נתונים.',slateNote:'הקבלה החוקית מופקת ב-Slate. כאן רק רושמים את התשלום, מדביקים את מספר הקבלה והקישור, ושולחים למתאמן.'},
   ru:{dir:'ltr',other:'עברית',brand:'Студия Леонида',portal:'Кабинет клиента',logout:'Выйти',loading:'Загрузка…',
     footer:'Система управления — только для команды. Официальные квитанции оформляются в Slate.',
@@ -118,6 +122,9 @@ const I18N = {
     toIssue:'Оформить в Slate',issued:'Оформлена · отправить',sent:'Отправлена',receiptNo:'№ квитанции',openSlate:'Открыть Slate',view:'Открыть',
     sendWa:'Отправить в WhatsApp',resend:'Отправить снова',fix:'Исправить',del:'Удалить',confirmDel:'Удалить? (В Slate ничего не удаляется)',
     badReceipt:'Укажите номер квитанции и ссылку, начинающуюся с https://',noPhone:'У клиента нет корректного номера телефона.',
+    roleAdmin:'Администратор сайта',roleCoach:'Тренер',team:'Команда',teamIntro:'Добавьте тренера после того, как он создал аккаунт в кабинете клиента со своим e-mail.',role:'Роль',addStaff:'Добавить в команду',removeStaff:'Убрать',you:'(вы)',
+    staffRes:{ok:'Команда обновлена.',no_account:'Нет аккаунта с этим e-mail. Пусть он сначала создаст аккаунт в кабинете клиента.',self:'Нельзя изменить свою роль.',not_admin:'Только администратор может управлять командой.',bad_role:'Неверная роль.'},
+    delMember:'Удалить клиента',confirmDelMember:'Удалить клиента и все его данные (абонементы, замеры, платежи)? Отменить нельзя.',memberDeleted:'Клиент удалён.',
     none:'Нет данных.',slateNote:'Официальная квитанция оформляется в Slate. Здесь записывают платёж, вставляют номер и ссылку квитанции и отправляют клиенту.'}
 };
 let lang = (()=>{ try { return localStorage.getItem('leonid-lang') === 'ru' ? 'ru' : 'he'; } catch(_) { return 'he'; } })();
@@ -142,7 +149,8 @@ const numOrNull = v => { const s = String(v ?? '').trim(); return s === '' ? nul
 let sb = null;
 try { if (window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) { console.error(e); }
 
-let S = { view:'loading', session:null, members:[], subs:[], meas:[], pays:[], codes:{}, selected:null, q:'', msg:null, busy:false };
+let S = { view:'loading', session:null, role:null, team:[], members:[], subs:[], meas:[], pays:[], codes:{}, selected:null, q:'', msg:null, busy:false };
+const isAdmin = () => S.role === 'admin';
 
 /* ---------- Données ---------- */
 async function loadAll(){
@@ -156,6 +164,7 @@ async function loadAll(){
   for (const r of [m, s, me, p, c]) if (r.error) throw r.error;
   S.members = m.data; S.subs = s.data; S.meas = me.data; S.pays = p.data;
   S.codes = Object.fromEntries((c.data || []).map(x => [x.member_id, x.activation_code]));
+  if (isAdmin()) { const t = await sb.rpc('staff_list'); if (t.error) throw t.error; S.team = t.data || []; }
 }
 const subOf = id => S.subs.find(s => s.member_id === id) || null;
 function subStatus(sub){
@@ -180,6 +189,7 @@ function chrome(){
   document.getElementById('to-portal').textContent = T('portal');
   document.getElementById('footer').textContent = T('footer');
   document.getElementById('logout-btn').classList.toggle('hidden', !S.session);
+  const rc = document.getElementById('role-chip'); rc.classList.toggle('hidden', !S.role); rc.textContent = S.role === 'admin' ? T('roleAdmin') : T('roleCoach');
 }
 const msgHtml = () => S.msg ? `<div class="msg ${S.msg.type}" role="status">${esc(S.msg.text)}</div>` : '';
 
@@ -224,7 +234,20 @@ function listHtml(){
       <label class="field">${T('address')}<input name="address"></label>
       <label class="field">${T('birth')}<input name="birth_date" type="date"></label>
       <button class="btn" ${S.busy ? 'disabled' : ''}>${T('addMember')}</button>
-    </form></section>`;
+    </form></section>${isAdmin() ? teamHtml() : ''}`;
+}
+
+function teamHtml(){
+  const me = S.session?.user?.id;
+  return `<section class="panel"><h2>${T('team')}</h2><p class="muted small">${T('teamIntro')}</p>${S.msg && S.msg.where === 'team' ? msgHtml() : ''}
+    <div class="table"><table><thead><tr><th>${T('email')}</th><th>${T('role')}</th><th></th></tr></thead><tbody>
+    ${S.team.map(x => `<tr><td><bdi>${esc(x.email)}</bdi> ${x.user_id === me ? `<span class="muted small">${T('you')}</span>` : ''}</td><td><span class="badge ${x.role === 'admin' ? '' : 'none'}">${x.role === 'admin' ? T('roleAdmin') : T('roleCoach')}</span></td>
+      <td>${x.user_id === me ? '' : `<button class="link danger" data-rm-staff="${x.user_id}">${T('removeStaff')}</button>`}</td></tr>`).join('')}
+    </tbody></table></div>
+    <form id="add-staff" class="form" style="margin-top:12px">
+      <label class="field">${T('email')}<input name="email" type="email" dir="ltr" required></label>
+      <label class="field">${T('role')}<select name="role"><option value="coach">${T('roleCoach')}</option><option value="admin">${T('roleAdmin')}</option></select></label>
+      <button class="btn">${T('addStaff')}</button></form></section>`;
 }
 
 function memberHtml(){
@@ -248,7 +271,8 @@ function memberHtml(){
       ${inp('full_name', T('name'), 'text', m.full_name, 'required')}${inp('full_name_ru', T('nameRu'), 'text', m.full_name_ru || '')}
       ${inp('email', T('email'), 'email', m.email, 'dir="ltr" required')}${inp('phone', T('phone'), 'tel', m.phone || '', 'dir="ltr"')}
       ${inp('address', T('address'), 'text', m.address || '')}${inp('birth_date', T('birth'), 'date', m.birth_date || '')}
-      <button class="btn">${T('save')}</button></form></section>
+      <button class="btn">${T('save')}</button></form>
+    ${isAdmin() ? `<p style="margin-top:14px"><button class="link danger" data-act="del-member">${T('delMember')}</button></p>` : ''}</section>
 
   <section class="panel"><h2>${T('subs')}</h2>
     <form id="add-sub" class="form">
@@ -298,6 +322,12 @@ async function run(fn, okMsg){
   catch (e) { console.error(e); const dup = String(e?.code) === '23505'; S.msg = { type:'err', text: dup ? T('duplicate') : T('errGeneric'), where: S.view === 'list' ? 'new' : 'member' }; }
   S.busy = false; render();
 }
+async function staffAction(promise){
+  S.busy = true; S.msg = null;
+  try { const { data, error } = await promise; if (error) throw error; await loadAll(); const res = T('staffRes'); S.msg = { type: data === 'ok' ? 'ok' : 'err', text: res[data] || T('errGeneric'), where:'team' }; }
+  catch (e) { console.error(e); S.msg = { type:'err', text:T('errGeneric'), where:'team' }; }
+  S.busy = false; render();
+}
 const formObj = f => Object.fromEntries(new FormData(f).entries());
 
 app.addEventListener('submit', async e => {
@@ -313,6 +343,7 @@ app.addEventListener('submit', async e => {
     if (newId && S.msg?.type === 'ok') { S.selected = newId; S.view = 'member'; render(); }
     return;
   }
+  if (f.id === 'add-staff') return staffAction(sb.rpc('admin_set_staff', { target_email:d.email.trim(), target_role:d.role }));
   const id = S.selected;
   if (f.id === 'edit-member') return run(async () => { const { error } = await sb.from('members').update({ full_name:d.full_name.trim(), full_name_ru:nullIfEmpty(d.full_name_ru), email:d.email.trim().toLowerCase(), phone:nullIfEmpty(d.phone), address:nullIfEmpty(d.address), birth_date:nullIfEmpty(d.birth_date) }).eq('id', id); if (error) throw error; }, T('saved'));
   if (f.id === 'add-sub') return run(async () => { const { error } = await sb.from('subscriptions').insert({ member_id:id, plan:d.plan, start_date:d.start_date, end_date:d.end_date, price:numOrNull(d.price) }); if (error) throw error; }, T('saved'));
@@ -329,7 +360,14 @@ app.addEventListener('click', async e => {
   const b = e.target.closest('button, a'); if (!b) return;
   if (b.dataset.open) { S.selected = b.dataset.open; S.view = 'member'; S.msg = null; render(); window.scrollTo(0,0); return; }
   if (b.id === 'back') { S.view = 'list'; S.msg = null; render(); return; }
+  if (b.dataset.rmStaff) { if (confirm(T('removeStaff') + '?')) return staffAction(sb.rpc('admin_remove_staff', { target:b.dataset.rmStaff })); return; }
   const id = S.selected, m = S.members.find(x => x.id === id);
+  if (b.dataset.act === 'del-member') {
+    if (!isAdmin() || !confirm(T('confirmDelMember'))) return;
+    await run(async () => { const { data, error } = await sb.from('members').delete().eq('id', id).select('id'); if (error) throw error; if (!data || !data.length) throw new Error('not deleted'); });
+    if (S.msg?.type !== 'err') { S.view = 'list'; S.selected = null; S.msg = { type:'ok', text:T('memberDeleted'), where:'new' }; render(); }
+    return;
+  }
   if (b.dataset.act === 'new-code') return run(async () => { const { error } = await sb.from('members').update({ activation_code:newCode() }).eq('id', id); if (error) throw error; }, T('saved'));
   if (b.dataset.act === 'share-code') {
     const phone = waPhone(m?.phone); if (!phone) { alert(T('noPhone')); return; }
@@ -371,12 +409,13 @@ async function enter(){
   S.view = 'loading'; render();
   const { data: staff, error } = await sb.rpc('is_staff');
   if (error || staff !== true) { S.view = 'notstaff'; render(); return; }
+  const r = await sb.rpc('my_staff_role'); S.role = r.error ? 'coach' : (r.data || 'coach');
   try { await loadAll(); S.view = 'list'; } catch (e) { console.error(e); S.msg = { type:'err', text:T('errGeneric') }; S.view = 'login'; }
   render();
 }
 
 document.getElementById('lang-btn').addEventListener('click', () => { lang = lang === 'he' ? 'ru' : 'he'; try { localStorage.setItem('leonid-lang', lang); } catch(_) {} render(); });
-document.getElementById('logout-btn').addEventListener('click', async () => { await sb.auth.signOut(); S = { ...S, view:'login', session:null, members:[], subs:[], meas:[], pays:[], codes:{}, selected:null, msg:null }; render(); });
+document.getElementById('logout-btn').addEventListener('click', async () => { await sb.auth.signOut(); S = { ...S, view:'login', session:null, role:null, team:[], members:[], subs:[], meas:[], pays:[], codes:{}, selected:null, msg:null }; render(); });
 
 (async () => {
   if (!sb) { S.view = 'login'; S.msg = { type:'err', text:T('errGeneric') }; render(); return; }
