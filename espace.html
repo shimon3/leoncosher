@@ -216,6 +216,10 @@ function homeHtml(){
   return `<h1>${T('hello')}, ${esc(name)}</h1>
     ${subscriptionHtml()}
     ${measurementsHtml()}
+    <section class="panel"><h2>הצהרת בריאות / Декларация о здоровье</h2>
+      <p class="muted small">מילוי הצהרת הבריאות של הסטודיו / Заполнить декларацию о здоровье</p>
+      <a class="btn" href="health.html" style="display:inline-block;text-decoration:none">מילוי / צפייה בהצהרה · Заполнить / посмотреть</a>
+    </section>
     ${paymentsHtml()}
     ${infoHtml(name)}`;
 }
