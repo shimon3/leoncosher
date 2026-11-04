@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>הצהרת בריאות | Leonid Studio</title><link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+:root{--green:#18342e;--cream:#f6f7f4;--line:#dfe8e0;--muted:#5d7165}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);font:15px/1.6 system-ui,Arial,sans-serif;color:var(--green)}
+main{max-width:780px;margin:0 auto;padding:18px}header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+h1{font-size:28px}h2{font-size:19px}.panel{border:1px solid var(--line);border-radius:16px;padding:24px;background:white;margin-top:17px;box-shadow:0 3px 20px #163c2b08}
+.question{padding:15px 0;border-bottom:1px solid var(--line)}.question:last-child{border-bottom:0}
+label{display:block;font-weight:600;margin-bottom:8px}.choices{display:flex;gap:20px;flex-wrap:wrap}.choices label{font-weight:400}
+input[type=text],textarea{width:100%;padding:10px;border:1px solid #bed0c3;border-radius:8px;font:inherit}
+textarea{min-height:70px}.btn{display:inline-block;border:0;background:#176e58;color:white;font:inherit;border-radius:10px;padding:10px 18px;text-decoration:none;cursor:pointer;margin:6px 0}
+.btn.alt{background:white;color:var(--green);border:1px solid #a9bfaf}.actions{display:flex;gap:10px;flex-wrap:wrap}
+.note{font-size:13px;color:var(--muted)}.error{color:#9d2f28}.ok{color:#176e58}
+@media(max-width:560px){main{padding:12px}.panel{padding:16px}}
+@media print{body{background:white}main{max-width:none;padding:0}.panel{box-shadow:none;border:0;padding:0}header,.actions,.no-print{display:none!important}.question{break-inside:avoid}input,textarea{border:0!important;resize:none}h1{font-size:23px}}
+</style>
+</head>
+<body>
+<main><header><strong>LEONID STUDIO · סטודיו לאוניד</strong><a class="btn alt" id="return" href="espace.html">חזרה / Назад</a></header>
+<div class="panel">
+<h1 id="heading">הצהרת בריאות · Декларация о здоровье</h1>
+<p class="note">טופס מידע ראשוני למתאמן. אין להסתמך עליו כתחליף לייעוץ רפואי או כתחליף אוטומטי לטופס רשמי הנדרש לפי דין.</p>
+<p id="status" role="status">טוען…</p>
+<form id="health-form" hidden>
+<div id="questions"></div>
+<div class="question"><label for="notes">הערות נוספות (לא חובה) / Дополнительно (необязательно)</label><textarea id="notes" name="notes" maxlength="1500"></textarea></div>
+<div class="question"><label for="signed_name">שם מלא לאישור ההצהרה / Имя и фамилия для подтверждения</label><input id="signed_name" name="signed_name" type="text" minlength="2" maxlength="150" required></div>
+<p class="note">אני מאשר/ת שהמידע שמסרתי נכון למיטב ידיעתי. / Подтверждаю достоверность сведений насколько мне известно.</p>
+<div class="actions no-print"><button class="btn" id="save" type="submit">שמירה / Сохранить</button><button class="btn alt" type="button" id="print">הדפסה / PDF</button></div>
+<p class="note" id="signed"></p>
+</form>
+</div></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+'use strict';
+const url='https://wddpkdxgyxunwgepudvy.supabase.co';
+const key='sb_publishable_BTt42V1aOdyifPsSdYp59g_NYZ4VS_B';
+const sb=window.supabase.createClient(url,key);
+const status=document.getElementById('status');
+const form=document.getElementById('health-form');
+const keys=[
+['heart','האם ידועה לך מחלת לב או בעיה לבבית?','Есть ли у вас диагностированное заболевание сердца?'],
+['chest','האם הרגשת כאבים בחזה בזמן פעילות גופנית?','Бывает ли боль в груди при физической нагрузке?'],
+['dizzy','האם היו לך סחרחורת קשה או עילפון בפעילות?','Бывали ли сильное головокружение или обморок при нагрузке?'],
+['breathing','האם קיימת בעיית נשימה משמעותית בזמן פעילות?','Есть ли выраженные затруднения дыхания при нагрузке?'],
+['injury','האם יש פציעה או מגבלה רפואית המשפיעה על אימון?','Есть ли травма или ограничение, влияющее на тренировки?'],
+['advice','האם רופא המליץ לך להגביל פעילות גופנית?','Советовал ли врач ограничить физическую активность?']
+];
+let member=null,readonly=true;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+document.getElementById('questions').innerHTML=keys.map(([id,he,ru])=>'<div class="question"><label>'+esc(he)+'<br><span class="note" dir="ltr">'+esc(ru)+'</span></label><div class="choices"><label><input type="radio" name="'+id+'" value="yes" required> כן / Да</label><label><input type="radio" name="'+id+'" value="no" required> לא / Нет</label></div></div>').join('');
+function message(s,isError=false){status.textContent=s;status.className=isError?'error':'ok';}
+function populate(d){
+ const ans=d?.answers||{};
+ for(const [id] of keys){const v=ans[id];if(v==='yes'||v==='no'){const el=form.querySelector('input[name="'+id+'"][value="'+v+'"]');if(el)el.checked=true;}}
+ form.notes.value=ans.notes||'';
+ form.signed_name.value=d?.signed_name||'';
+ document.getElementById('signed').textContent=d?.signed_at?'תאריך אישור / Дата подтверждения: '+new Date(d.signed_at).toLocaleString('he-IL'):'';
+ if(readonly){form.querySelectorAll('input,textarea').forEach(x=>x.disabled=true);document.getElementById('save').hidden=true;}
+ form.hidden=false;
+}
+(async()=>{
+ try{
+ const {data:{user},error:authError}=await sb.auth.getUser();
+ if(authError||!user){message('יש להתחבר תחילה / Войдите в систему.',true);return;}
+ const target=new URLSearchParams(location.search).get('member');
+ const {data:staff,error:staffError}=await sb.rpc('is_staff');
+ if(staffError)throw staffError;
+ if(target){
+   if(staff!==true){message('אין הרשאה / Нет доступа.',true);return;}
+   readonly=true;
+   const {data,error}=await sb.from('members').select('id,full_name').eq('id',target).single();
+   if(error)throw error;member=data;
+   document.getElementById('return').href='admin.html';
+ }else{
+   const {data,error}=await sb.from('members').select('id,full_name').eq('user_id',user.id).maybeSingle();
+   if(error)throw error;
+   if(!data){message('לא נמצא כרטיס מתאמן / Профиль не найден.',true);return;}
+   member=data;readonly=false;
+ }
+ document.getElementById('heading').textContent='הצהרת בריאות / Декларация о здоровье — '+member.full_name;
+ const {data, error}=await sb.from('health_declarations').select('answers,signed_name,signed_at').eq('member_id',member.id).maybeSingle();
+ if(error)throw error;
+ populate(data);
+ message(data?'ההצהרה נשמרה / Декларация сохранена':readonly?'טרם מולא / Ещё не заполнена':'נא למלא את ההצהרה / Заполните декларацию');
+ if(readonly&&!data){form.hidden=true;}
+ }catch(err){console.error(err);message('אירעה שגיאה בטעינת ההצהרה / Ошибка загрузки.',true);}
+})();
+form.addEventListener('submit',async e=>{
+ e.preventDefault();if(readonly||!member)return;
+ const answers={};for(const [id] of keys){const x=form.querySelector('input[name="'+id+'"]:checked');if(!x){message('יש לענות על כל השאלות',true);return;}answers[id]=x.value;}
+ answers.notes=form.notes.value.trim();
+ const name=form.signed_name.value.trim();if(name.length<2){message('יש להזין שם מלא',true);return;}
+ const btn=document.getElementById('save');btn.disabled=true;
+ const {error}=await sb.from('health_declarations').upsert({member_id:member.id,answers,signed_name:name,signed_at:new Date().toISOString(),updated_at:new Date().toISOString()},{onConflict:'member_id'});
+ btn.disabled=false;
+ if(error){console.error(error);message('שמירה נכשלה / Ошибка сохранения.',true);return;}
+ document.getElementById('signed').textContent='תאריך אישור / Дата подтверждения: '+new Date().toLocaleString('he-IL');
+ message('נשמר בהצלחה / Успешно сохранено');
+});
+document.getElementById('print').addEventListener('click',()=>window.print());
+</script></body></html>

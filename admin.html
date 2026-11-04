@@ -278,6 +278,11 @@ function memberHtml(){
   return `<p><button class="link" id="back">${T('back')}</button></p>
   <div class="row between"><h1>${esc(nameOf(m))}</h1>${statusBadge(subStatus(lastSub))}</div>${S.msg ? msgHtml() : ''}
 
+  <section class="panel"><h2>הצהרת בריאות / Декларация о здоровье</h2>
+    <p class="muted small">לצפייה בהצהרת הבריאות של המתאמן. המתאמן ממלא את ההצהרה דרך האזור האישי שלו. / Просмотр анкеты. Клиент заполняет её в своём кабинете.</p>
+    <a class="btn alt" href="health.html?member=${encodeURIComponent(m.id)}">הצגת הצהרה / Открыть декларацию</a>
+  </section>
+
   <section class="panel"><h2>${T('activation')}</h2>
     ${m.user_id ? `<span class="badge">✓ ${T('linked')}</span>`
       : `<div class="row"><span class="badge none">${T('notLinked')}</span>${code ? `<span>${T('code')}: <span class="code" dir="ltr">${esc(code)}</span></span> <button class="btn wa sm" data-act="share-code">${T('shareCode')}</button>` : ''}<button class="link" data-act="new-code">${T('newCode')}</button></div>`}
