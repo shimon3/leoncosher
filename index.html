@@ -3,12 +3,104 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#18342e">
+<meta name="description" content="סטודיו לאוניד — אימון אישי, יחס חם והתקדמות בקצב שלך.">
 <title>סטודיו לאוניד | Leonid Studio</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta http-equiv="refresh" content="0; url=espace.html">
-<script>location.replace('espace.html' + location.search + location.hash);</script>
+<style>
+:root{color-scheme:light;--forest:#18342e;--green:#176e58;--cream:#f7f4ed;--muted:#65766c;--stroke:#e0e8df}
+*{box-sizing:border-box}
+html{min-height:100%}
+body{margin:0;min-height:100vh;background:var(--cream);color:var(--forest);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+a{color:inherit}
+.shell{max-width:1120px;margin:auto;padding:24px clamp(18px,4vw,48px)}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:inline-flex;align-items:center;gap:12px;text-decoration:none}
+.brand img{width:48px;height:48px}
+.brand strong{display:block;font-size:18px;line-height:1.25}
+.brand small{font-size:10px;letter-spacing:.16em;color:var(--muted);font-weight:650}
+.lang{background:#fff;border:1px solid var(--stroke);border-radius:30px;padding:8px 15px;color:var(--forest);font:inherit;font-size:14px;cursor:pointer}
+.lang:focus-visible,.cta:focus-visible,.secondary:focus-visible{outline:3px solid #d2a660;outline-offset:3px}
+main{min-height:min(680px,calc(100svh - 175px));display:grid;grid-template-columns:1fr 0.9fr;align-items:center;gap:clamp(28px,6vw,84px);padding:48px 0}
+.copy{max-width:520px}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;color:var(--green);font-weight:700;font-size:13px;letter-spacing:.01em}
+.eyebrow:before{content:"";display:inline-block;width:8px;height:8px;background:#bc9256;border-radius:50%}
+h1{font-size:clamp(36px,5.4vw,70px);line-height:1.16;letter-spacing:-.04em;margin:18px 0 20px;max-width:580px}
+.lead{font-size:clamp(17px,2vw,21px);color:#52685c;max-width:430px;margin:0 0 34px}
+.actions{display:flex;align-items:center;flex-wrap:wrap;gap:14px}
+.cta{display:inline-flex;justify-content:center;align-items:center;min-height:52px;padding:12px 27px;border-radius:13px;background:var(--forest);text-decoration:none;color:white;font-weight:700;box-shadow:0 9px 19px #18342e19;transition:background .2s,transform .2s}
+.cta:hover{background:var(--green);transform:translateY(-1px)}
+.secondary{font-size:14px;color:var(--green);font-weight:650;text-underline-offset:4px}
+.hint{font-size:13px;color:var(--muted);margin-top:18px}
+.art{position:relative;min-height:480px;border-radius:180px 180px 26px 26px;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#f6e8c9 0%,transparent 52%),linear-gradient(148deg,#d9e5d8 0%,#a9c3ac 56%,#6e9881 100%);box-shadow:0 24px 50px #18342e12}
+.art:before{content:"";position:absolute;width:62%;aspect-ratio:1;border:2px solid #ffffff8a;border-radius:50%;top:14%;left:18%;box-shadow:0 0 0 38px #ffffff21,0 0 0 80px #ffffff15}
+.art:after{content:"";position:absolute;inset:auto -8% -29% -8%;height:58%;background:#18342e;border-radius:50% 50% 0 0;transform:rotate(-10deg)}
+.art svg{position:absolute;width:76%;height:76%;top:8%;left:12%;z-index:1;filter:drop-shadow(0 12px 14px #173d2b18)}
+.art-label{position:absolute;z-index:2;bottom:26px;left:24px;right:24px;color:#fff;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em}
+footer{border-top:1px solid var(--stroke);padding:18px 0;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+[hidden]{display:none!important}
+@media(max-width:700px){.shell{padding:16px 20px}header .brand img{width:42px;height:42px}main{grid-template-columns:1fr;padding:34px 0 25px;gap:24px;min-height:0}.copy{max-width:none}h1{font-size:clamp(34px,9vw,48px);margin:12px 0 14px}.lead{margin-bottom:24px}.art{min-height:230px;height:clamp(230px,53vw,330px);border-radius:130px 130px 22px 22px;max-width:430px;width:100%;margin:auto}.art svg{height:88%;top:0}.art-label{bottom:16px}.cta{width:100%}.actions{display:block}.secondary{display:inline-block;margin-top:14px}.hint{margin-top:12px}footer{margin-top:8px}}
+@media(prefers-reduced-motion:reduce){.cta{transition:none}.cta:hover{transform:none}}
+</style>
 </head>
-<body style="font:15px system-ui,Arial,sans-serif;text-align:center;padding:40px">
-<a href="espace.html">כניסה לאזור האישי · Вход в личный кабинет</a>
+<body>
+<div class="shell">
+<header>
+  <a class="brand" href="./" aria-label="Leonid Studio">
+    <img src="assets/images/symbol-on-light.svg" alt="">
+    <span><strong data-i="brand">סטודיו לאוניד</strong><small>LEONID STUDIO</small></span>
+  </a>
+  <button class="lang" id="language" type="button" aria-label="שינוי שפה">Русский</button>
+</header>
+<main>
+  <section class="copy" aria-labelledby="welcome">
+    <div class="eyebrow" data-i="eyebrow">מרגישים בבית. מתקדמים ביחד.</div>
+    <h1 id="welcome" data-i="heading">המקום שלך<br>להרגיש טוב.</h1>
+    <p class="lead" data-i="intro">אימון אישי, יחס חם והתקדמות בקצב שלך. ברוכים הבאים לסטודיו לאוניד.</p>
+    <div class="actions">
+      <a class="cta" id="enter" href="espace.html" data-i="login">כניסה לאזור האישי</a>
+      <a class="secondary" id="signup" href="espace.html" data-i="signup">אין לך חשבון? יצירת חשבון</a>
+    </div>
+    <p class="hint" data-i="roles">כניסה אחת למתאמנים ולצוות הסטודיו</p>
+  </section>
+  <div class="art" role="img" aria-label="איור מופשט של תנועה ואימון">
+    <svg viewBox="0 0 400 440" aria-hidden="true" focusable="false">
+      <circle cx="201" cy="86" r="36" fill="#18342e"/>
+      <path d="M199 137c-39 0-55 34-65 79l-28 72c-5 13 1 26 12 30 13 5 25-2 29-14l29-67 18 50-42 93c-7 15 0 30 14 35 14 6 29-2 35-16l45-101c5-11 5-19 1-29l-18-52 34 40c8 10 23 11 32 2 10-8 11-22 2-32l-54-64c-14-17-26-26-44-26Z" fill="#18342e"/>
+      <path d="M137 203 78 240m166-19 66-11" stroke="#f7f4ed" stroke-width="10" stroke-linecap="round"/>
+      <path d="M74 230v26m-12-24v23m250-55v23m12-25v23" stroke="#18342e" stroke-width="9" stroke-linecap="round"/>
+    </svg>
+    <div class="art-label"><span>LEONID STUDIO</span><span>MOVE · GROW · FEEL GOOD</span></div>
+  </div>
+</main>
+<footer>
+  <span data-i="footer">סטודיו לאוניד · האזור האישי שלך</span>
+  <span>LEONID STUDIO</span>
+</footer>
+</div>
+<script>
+(function(){
+  var messages={
+    he:{brand:'סטודיו לאוניד',eyebrow:'מרגישים בבית. מתקדמים ביחד.',heading:'המקום שלך<br>להרגיש טוב.',intro:'אימון אישי, יחס חם והתקדמות בקצב שלך. ברוכים הבאים לסטודיו לאוניד.',login:'כניסה לאזור האישי',signup:'אין לך חשבון? יצירת חשבון',roles:'כניסה אחת למתאמנים ולצוות הסטודיו',footer:'סטודיו לאוניד · האזור האישי שלך',lang:'Русский'},
+    ru:{brand:'Студия Леонида',eyebrow:'Чувствуйте себя как дома. Растём вместе.',heading:'Место, где<br>вам хорошо.',intro:'Персональные тренировки, тёплая атмосфера и прогресс в вашем ритме. Добро пожаловать в студию Леонида.',login:'Войти в личный кабинет',signup:'Нет аккаунта? Создать',roles:'Единый вход для клиентов и команды студии',footer:'Студия Леонида · Ваш личный кабинет',lang:'עברית'}
+  };
+  var lang='he';
+  try{lang=localStorage.getItem('leonid_home_lang')==='ru'?'ru':'he'}catch(e){}
+  function render(){
+    document.documentElement.lang=lang;
+    document.documentElement.dir=lang==='he'?'rtl':'ltr';
+    var t=messages[lang];
+    document.querySelectorAll('[data-i]').forEach(function(el){var key=el.getAttribute('data-i');if(key==='heading'){el.innerHTML=t[key]}else{el.textContent=t[key]}});
+    var b=document.getElementById('language');b.textContent=t.lang;b.setAttribute('aria-label',lang==='he'?'שינוי שפה':'Сменить язык');
+    document.querySelector('.art').setAttribute('aria-label',lang==='he'?'איור מופשט של תנועה ואימון':'Абстрактная иллюстрация движения');
+  }
+  document.getElementById('language').addEventListener('click',function(){lang=lang==='he'?'ru':'he';try{localStorage.setItem('leonid_home_lang',lang)}catch(e){}render()});
+  // Preserve any incoming auth links or query parameters when visiting the homepage.
+  var params=location.search||'',hash=location.hash||'';
+  document.getElementById('enter').href='espace.html'+params+hash;
+  document.getElementById('signup').href='espace.html'+params+hash;
+  render();
+})();
+</script>
 </body>
 </html>
