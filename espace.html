@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>האזור שלי | Leonid Studio</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+:root{--ink:#18342e;--green:#176e58;--green-d:#0f5644;--mint:#e9f4ee;--gold:#d7a95c;--bg:#f6f7f4;--line:#e2e9e3;--muted:#708078;--red:#ac4d49;--red-bg:#fbeae8;--warn:#956018;--warn-bg:#fff3d8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font:15px/1.55 system-ui,Arial,sans-serif;color:var(--ink)}
+.wrap{max-width:880px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:6px 0 14px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand img{width:42px;height:42px}
+.brand b{display:block;font-size:17px}
+.brand span{font-size:11px;letter-spacing:.12em;color:var(--muted)}
+.tools{display:flex;gap:8px;align-items:center}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 6px 24px #173d2b08;margin-top:16px}
+h1{font-size:24px;margin:4px 0 2px}
+h2{font-size:18px;margin:0 0 12px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.btn{border:0;border-radius:10px;padding:11px 16px;background:var(--green);color:#fff;font:inherit;font-weight:650;cursor:pointer}
+.btn:hover{background:var(--green-d)}
+.btn:disabled{opacity:.6;cursor:wait}
+.link{background:none;border:0;padding:0;color:var(--green);font:inherit;font-weight:650;text-decoration:underline;cursor:pointer}
+.field{display:grid;gap:5px;font-size:13px;color:#5d7065;margin:11px 0}
+.field input{padding:11px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;color:var(--ink);background:#fbfcfa}
+.field input:focus{outline:2px solid #176e5833;border-color:var(--green)}
+.auth{max-width:420px;margin:24px auto}
+.msg{padding:10px 12px;border-radius:10px;margin:10px 0;font-size:14px}
+.msg.err{background:var(--red-bg);color:#7d2f2c;border:1px solid #e8b5b0}
+.msg.ok{background:var(--mint);color:var(--green-d);border:1px solid #b8decb}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.metric{background:#f7faf8;border:1px solid var(--line);border-radius:12px;padding:12px}
+.metric .k{font-size:12px;color:var(--muted)}
+.metric .v{font-size:22px;font-weight:750;display:block}
+.metric .d{font-size:12px}
+.up{color:var(--red)} .down{color:var(--green)}
+.badge{display:inline-block;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;background:#e5f4eb;color:#176e58;border:1px solid #b8decb}
+.badge.warn{background:var(--warn-bg);color:var(--warn);border-color:#edc66b}
+.badge.bad{background:var(--red-bg);color:#a94745;border-color:#e8b5b0}
+.sub{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.days{font-size:44px;font-weight:800;line-height:1}
+.bar{height:10px;background:#edf2ee;border-radius:99px;overflow:hidden;margin-top:12px}
+.bar i{display:block;height:100%;background:var(--green);border-radius:99px}
+.bar.warn i{background:var(--gold)} .bar.bad i{background:var(--red)}
+dl{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;margin:0}
+dt{color:var(--muted);font-size:13px} dd{margin:0}
+.table{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:460px}
+th{font-size:12px;color:var(--muted);font-weight:650;text-align:start;padding:9px 8px;background:#f6f8f5}
+td{padding:10px 8px;border-top:1px solid var(--line)}
+.empty{color:var(--muted);padding:12px 0}
+.pays table{min-width:0}
+.pays td{vertical-align:top}
+footer{color:var(--muted);font-size:12px;margin:18px 0 30px;text-align:center}
+.hidden{display:none!important}
+@media (max-width:560px){.wrap{padding:12px}.panel{padding:15px}.days{font-size:36px}dl{grid-template-columns:1fr}dt{margin-top:6px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="index.html"><img src="assets/images/symbol-on-light.svg" alt=""><div><b id="brand-name">סטודיו לאוניד</b><span>LEONID STUDIO</span></div></a>
+    <div class="tools">
+      <button class="chip" id="lang-btn" type="button">Русский</button>
+      <button class="chip hidden" id="logout-btn" type="button"></button>
+    </div>
+  </header>
+
+  <main id="app" aria-live="polite"><p class="muted" data-i="loading"></p></main>
+
+  <footer data-i="footer"></footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ---------- Configuration (clé publique : faite pour être dans le site) ---------- */
+const SUPABASE_URL = 'https://wddpkdxgyxunwgepudvy.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_BTt42V1aOdyifPsSdYp59g_NYZ4VS_B';
+
+/* ---------- Textes ---------- */
+const I18N = {
+  he: {
+    dir:'rtl', other:'Русский', brand:'סטודיו לאוניד',
+    loading:'טוען…', footer:'המידע שלך מוצג רק לך ולצוות הסטודיו. לשינוי פרטים פנו ללאוניד.',
+    loginTitle:'כניסה לאזור האישי', loginIntro:'צפייה במנוי, במדידות ובקבלות שלך.',
+    email:'דוא״ל', password:'סיסמה', login:'כניסה', toSignup:'אין לך חשבון? יצירת חשבון', toLogin:'כבר יש לך חשבון? כניסה',
+    signupTitle:'יצירת חשבון', signupIntro:'השתמשו באותה כתובת דוא״ל שמסרתם ללאוניד.', signup:'יצירת חשבון', pwHint:'לפחות 6 תווים',
+    activateTitle:'הפעלת החשבון', activateIntro:'הזינו את קוד ההפעלה שקיבלתם מלאוניד. החשבון יחובר לכרטיס שלכם רק אם הקוד והדוא״ל תואמים.',
+    code:'קוד הפעלה', activate:'הפעלה', badCode:'הקוד או כתובת הדוא״ל לא תואמים. בדקו את הקוד או פנו ללאוניד.',
+    staffTitle:'חשבון צוות', staffIntro:'החשבון הזה שייך לצוות הסטודיו, לא למתאמן.', toAdmin:'למערכת הניהול',
+    logout:'יציאה', hello:'שלום',
+    subTitle:'המנוי שלי', noSub:'אין מנוי רשום.', daysLeft:'ימים נותרו', endsToday:'מסתיים היום', expiredDays:'ימים מאז שפג התוקף',
+    active:'פעיל', soon:'מסתיים בקרוב', expired:'פג תוקף', from:'מ־', to:'עד', renew:'לחידוש המנוי פנו ללאוניד.',
+    plans:{monthly:'מנוי חודשי',quarterly:'מנוי רבעוני',yearly:'מנוי שנתי',punch:'כרטיסייה'},
+    infoTitle:'הפרטים שלי', fullName:'שם מלא', phone:'טלפון', address:'כתובת', birth:'תאריך לידה', age:'גיל', years:'שנים',
+    measTitle:'המדידות שלי', noMeas:'עדיין אין מדידות.', lastMeas:'מדידה אחרונה', weight:'משקל', fat:'אחוז שומן', muscle:'מסת שריר', water:'אחוז מים', height:'גובה', bmi:'BMI',
+    kg:'ק״ג', cm:'ס״מ', vsPrev:'לעומת המדידה הקודמת', history:'היסטוריית מדידות', date:'תאריך',
+    bmiCat:[[18.5,'תת־משקל','warn'],[25,'תקין',''],[30,'עודף משקל','warn'],[999,'השמנה','bad']],
+    payTitle:'הקבלות שלי', noPay:'אין תשלומים רשומים.', amount:'סכום', desc:'עבור', receipt:'קבלה', view:'צפייה בקבלה', preparing:'בהכנה',
+    errGeneric:'משהו השתבש. נסו שוב.', errLogin:'דוא״ל או סיסמה שגויים.', errExists:'כבר קיים חשבון עם הדוא״ל הזה. נסו להיכנס.', errConfig:'החיבור למסד הנתונים לא הוגדר.'
+  },
+  ru: {
+    dir:'ltr', other:'עברית', brand:'Студия Леонида',
+    loading:'Загрузка…', footer:'Ваши данные видите только вы и команда студии. Чтобы изменить данные, обратитесь к Леониду.',
+    loginTitle:'Вход в личный кабинет', loginIntro:'Абонемент, замеры и квитанции.',
+    email:'Эл. почта', password:'Пароль', login:'Войти', toSignup:'Нет аккаунта? Создать', toLogin:'Уже есть аккаунт? Войти',
+    signupTitle:'Создание аккаунта', signupIntro:'Используйте тот же e-mail, который вы дали Леониду.', signup:'Создать аккаунт', pwHint:'Минимум 6 символов',
+    activateTitle:'Активация аккаунта', activateIntro:'Введите код активации от Леонида. Аккаунт привяжется к вашей карточке, только если код и e-mail совпадают.',
+    code:'Код активации', activate:'Активировать', badCode:'Код или e-mail не совпадают. Проверьте код или обратитесь к Леониду.',
+    staffTitle:'Аккаунт команды', staffIntro:'Этот аккаунт принадлежит команде студии, а не клиенту.', toAdmin:'В систему управления',
+    logout:'Выйти', hello:'Здравствуйте',
+    subTitle:'Мой абонемент', noSub:'Абонемент не найден.', daysLeft:'дней осталось', endsToday:'Заканчивается сегодня', expiredDays:'дней назад истёк',
+    active:'Активен', soon:'Скоро закончится', expired:'Истёк', from:'с', to:'по', renew:'Для продления обратитесь к Леониду.',
+    plans:{monthly:'Месячный абонемент',quarterly:'Квартальный абонемент',yearly:'Годовой абонемент',punch:'Карта посещений'},
+    infoTitle:'Мои данные', fullName:'Имя', phone:'Телефон', address:'Адрес', birth:'Дата рождения', age:'Возраст', years:'лет',
+    measTitle:'Мои замеры', noMeas:'Замеров пока нет.', lastMeas:'Последний замер', weight:'Вес', fat:'Жир', muscle:'Мышечная масса', water:'Вода', height:'Рост', bmi:'ИМТ',
+    kg:'кг', cm:'см', vsPrev:'по сравнению с прошлым замером', history:'История замеров', date:'Дата',
+    bmiCat:[[18.5,'Недостаточный вес','warn'],[25,'Норма',''],[30,'Избыточный вес','warn'],[999,'Ожирение','bad']],
+    payTitle:'Мои квитанции', noPay:'Платежей нет.', amount:'Сумма', desc:'За', receipt:'Квитанция', view:'Открыть квитанцию', preparing:'Готовится',
+    errGeneric:'Что-то пошло не так. Попробуйте ещё раз.', errLogin:'Неверный e-mail или пароль.', errExists:'Аккаунт с этим e-mail уже есть. Попробуйте войти.', errConfig:'Подключение к базе данных не настроено.'
+  }
+};
+let lang = (()=>{ try { return localStorage.getItem('leonid-lang') === 'ru' ? 'ru' : 'he'; } catch(_) { return 'he'; } })();
+const T = k => I18N[lang][k];
+
+/* ---------- Utilitaires ---------- */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const app = document.getElementById('app');
+const todayUTC = () => { const d = new Date(); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); };
+const dayNum = iso => { const [y,m,d] = String(iso).split('-').map(Number); return Date.UTC(y, m-1, d); };
+const fmtDate = iso => iso ? String(iso).slice(0,10).split('-').reverse().join('/') : '—';
+const num = (v, digits=1) => (v === null || v === undefined || v === '') ? '—' : Number(v).toLocaleString(lang === 'he' ? 'he-IL' : 'ru-RU', {maximumFractionDigits:digits});
+const money = v => '₪' + Number(v).toLocaleString('he-IL', {minimumFractionDigits:2, maximumFractionDigits:2});
+const ageOf = iso => { if (!iso) return null; const b = new Date(iso), n = new Date(); let a = n.getFullYear() - b.getFullYear(); if (n.getMonth() < b.getMonth() || (n.getMonth() === b.getMonth() && n.getDate() < b.getDate())) a--; return a; };
+const bmiOf = (w, h) => (w && h) ? w / ((h/100) ** 2) : null;
+const safeUrl = u => { try { const x = new URL(u); return x.protocol === 'https:' ? x.href : null; } catch(_) { return null; } };
+
+/* ---------- Supabase ---------- */
+let sb = null;
+try {
+  if (window.supabase && SUPABASE_URL.startsWith('https://')) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch (e) { console.error(e); }
+
+let state = { view:'loading', session:null, member:null, subs:[], meas:[], pays:[], msg:null, busy:false, isStaff:false };
+
+/* ---------- Langue ---------- */
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.documentElement.dir = T('dir');
+  document.getElementById('lang-btn').textContent = T('other');
+  document.getElementById('brand-name').textContent = T('brand');
+  document.getElementById('logout-btn').textContent = T('logout');
+  document.querySelectorAll('[data-i]').forEach(el => el.textContent = T(el.dataset.i));
+}
+document.getElementById('lang-btn').addEventListener('click', () => {
+  lang = lang === 'he' ? 'ru' : 'he';
+  try { localStorage.setItem('leonid-lang', lang); } catch(_) {}
+  applyLang(); render();
+});
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  if (sb) await sb.auth.signOut();
+  state = { ...state, view:'login', session:null, member:null, subs:[], meas:[], pays:[], msg:null, isStaff:false };
+  render();
+});
+
+/* ---------- Rendu ---------- */
+const msgHtml = () => state.msg ? `<div class="msg ${state.msg.type}" role="alert">${esc(state.msg.text)}</div>` : '';
+
+function render(){
+  document.getElementById('logout-btn').classList.toggle('hidden', !state.session);
+  const v = state.view;
+  if (v === 'loading') { app.innerHTML = `<p class="muted">${T('loading')}</p>`; return; }
+  if (v === 'noconfig') { app.innerHTML = `<div class="panel auth"><div class="msg err">${T('errConfig')}</div></div>`; return; }
+  if (v === 'login' || v === 'signup') {
+    const s = v === 'signup';
+    app.innerHTML = `<div class="panel auth">
+      <h1>${T(s ? 'signupTitle' : 'loginTitle')}</h1>
+      <p class="muted">${T(s ? 'signupIntro' : 'loginIntro')}</p>${msgHtml()}
+      <form id="auth-form" novalidate>
+        <label class="field">${T('email')}<input name="email" type="email" autocomplete="email" dir="ltr" required></label>
+        <label class="field">${T('password')}<input name="password" type="password" minlength="6" autocomplete="${s ? 'new-password' : 'current-password'}" dir="ltr" required>${s ? `<span class="small muted">${T('pwHint')}</span>` : ''}</label>
+        <button class="btn" type="submit" ${state.busy ? 'disabled' : ''}>${T(s ? 'signup' : 'login')}</button>
+      </form>
+      <p class="small"><button class="link" id="switch-auth" type="button">${T(s ? 'toLogin' : 'toSignup')}</button></p>
+    </div>`;
+    document.getElementById('auth-form').addEventListener('submit', e => onAuth(e, s));
+    document.getElementById('switch-auth').addEventListener('click', () => { state.view = s ? 'login' : 'signup'; state.msg = null; render(); });
+    return;
+  }
+  if (v === 'activate') {
+    app.innerHTML = `<div class="panel auth">
+      <h1>${T('activateTitle')}</h1><p class="muted">${T('activateIntro')}</p>
+      <p class="small muted" dir="ltr">${esc(state.session?.user?.email)}</p>${msgHtml()}
+      <form id="code-form">
+        <label class="field">${T('code')}<input name="code" autocomplete="one-time-code" dir="ltr" maxlength="20" required style="text-transform:uppercase;letter-spacing:.15em"></label>
+        <button class="btn" type="submit" ${state.busy ? 'disabled' : ''}>${T('activate')}</button>
+      </form></div>`;
+    document.getElementById('code-form').addEventListener('submit', onActivate);
+    return;
+  }
+  if (v === 'staff') {
+    app.innerHTML = `<div class="panel auth"><h1>${T('staffTitle')}</h1><p class="muted">${T('staffIntro')}</p><a class="btn" href="index.html" style="display:inline-block;text-decoration:none">${T('toAdmin')}</a></div>`;
+    return;
+  }
+  if (v === 'home') { app.innerHTML = homeHtml(); return; }
+}
+
+function homeHtml(){
+  const m = state.member;
+  const name = lang === 'ru' && m.full_name_ru ? m.full_name_ru : m.full_name;
+  return `<h1>${T('hello')}, ${esc(name)}</h1>
+    ${subscriptionHtml()}
+    ${measurementsHtml()}
+    ${paymentsHtml()}
+    ${infoHtml(name)}`;
+}
+
+function subscriptionHtml(){
+  const s = state.subs[0];
+  if (!s) return `<section class="panel"><h2>${T('subTitle')}</h2><p class="empty">${T('noSub')}</p></section>`;
+  const today = todayUTC(), start = dayNum(s.start_date), end = dayNum(s.end_date);
+  const left = Math.round((end - today) / 864e5);
+  const total = Math.max(1, Math.round((end - start) / 864e5));
+  const pct = Math.min(100, Math.max(0, Math.round(((end - today) / 864e5) / total * 100)));
+  const status = left < 0 ? 'expired' : left <= 7 ? 'soon' : 'active';
+  const cls = status === 'expired' ? 'bad' : status === 'soon' ? 'warn' : '';
+  const big = left > 0 ? `<span class="days">${left}</span><div>${T('daysLeft')}</div>`
+            : left === 0 ? `<span class="days">0</span><div>${T('endsToday')}</div>`
+            : `<span class="days">${-left}</span><div>${T('expiredDays')}</div>`;
+  const plan = T('plans')[s.plan] || s.plan;
+  return `<section class="panel"><h2>${T('subTitle')}</h2>
+    <div class="sub"><div>${big}</div>
+      <div><div><b>${esc(plan)}</b> <span class="badge ${cls}">${T(status)}</span></div>
+      <div class="muted small">${T('from')} ${fmtDate(s.start_date)} ${T('to')} ${fmtDate(s.end_date)}</div>
+      ${status !== 'active' ? `<div class="small">${T('renew')}</div>` : ''}</div></div>
+    <div class="bar ${cls}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>
+  </section>`;
+}
+
+function measurementsHtml(){
+  const list = state.meas;
+  if (!list.length) return `<section class="panel"><h2>${T('measTitle')}</h2><p class="empty">${T('noMeas')}</p></section>`;
+  const [last, prev] = list;
+  const height = last.height_cm || list.find(x => x.height_cm)?.height_cm;
+  const bmi = bmiOf(last.weight_kg, height);
+  const bmiPrev = prev ? bmiOf(prev.weight_kg, prev.height_cm || height) : null;
+  const cat = bmi ? T('bmiCat').find(c => bmi < c[0]) : null;
+  const delta = (a, b, unit, goodDown) => {
+    if (a == null || b == null) return '';
+    const d = Number(a) - Number(b); if (Math.abs(d) < 0.05) return `<span class="d muted">=</span>`;
+    const good = goodDown ? d < 0 : d > 0;
+    return `<span class="d ${good ? 'down' : 'up'}" title="${T('vsPrev')}">${d > 0 ? '▲' : '▼'} ${num(Math.abs(d))}${unit}</span>`;
+  };
+  const card = (k, v, unit, dHtml='', extra='') => `<div class="metric"><span class="k">${k}</span><span class="v">${v}${v !== '—' ? `<small class="small muted"> ${unit}</small>` : ''}</span>${dHtml}${extra}</div>`;
+  return `<section class="panel"><h2>${T('measTitle')}</h2>
+    <p class="muted small">${T('lastMeas')}: ${fmtDate(last.measured_at)}</p>
+    <div class="grid">
+      ${card(T('weight'), num(last.weight_kg), T('kg'), prev ? delta(last.weight_kg, prev.weight_kg, ' ' + T('kg'), true) : '')}
+      ${card(T('bmi'), bmi ? num(bmi) : '—', '', prev && bmiPrev ? delta(bmi, bmiPrev, '', true) : '', cat ? `<span class="badge ${cat[2]}">${cat[1]}</span>` : '')}
+      ${card(T('fat'), num(last.fat_pct), '%', prev ? delta(last.fat_pct, prev.fat_pct, '%', true) : '')}
+      ${card(T('muscle'), num(last.muscle_kg), T('kg'), prev ? delta(last.muscle_kg, prev.muscle_kg, ' ' + T('kg'), false) : '')}
+      ${card(T('water'), num(last.water_pct), '%', prev ? delta(last.water_pct, prev.water_pct, '%', false) : '')}
+      ${card(T('height'), num(height, 0), T('cm'))}
+    </div>
+    ${list.length > 1 ? `<h2 style="margin-top:18px">${T('history')}</h2><div class="table" tabindex="0"><table><thead><tr>
+      <th>${T('date')}</th><th>${T('weight')}</th><th>${T('bmi')}</th><th>${T('fat')}</th><th>${T('muscle')}</th><th>${T('water')}</th></tr></thead><tbody>
+      ${list.map(x => { const b = bmiOf(x.weight_kg, x.height_cm || height); return `<tr><td>${fmtDate(x.measured_at)}</td><td>${num(x.weight_kg)}</td><td>${b ? num(b) : '—'}</td><td>${num(x.fat_pct)}%</td><td>${num(x.muscle_kg)}</td><td>${num(x.water_pct)}%</td></tr>`; }).join('')}
+    </tbody></table></div>` : ''}
+  </section>`;
+}
+
+function paymentsHtml(){
+  const list = state.pays;
+  if (!list.length) return `<section class="panel"><h2>${T('payTitle')}</h2><p class="empty">${T('noPay')}</p></section>`;
+  return `<section class="panel"><h2>${T('payTitle')}</h2><div class="table pays" tabindex="0"><table><thead><tr>
+    <th>${T('date')}</th><th>${T('amount')}</th><th>${T('desc')}</th><th>${T('receipt')}</th></tr></thead><tbody>
+    ${list.map(p => { const url = p.status !== 'toIssue' ? safeUrl(p.slate_url) : null;
+      return `<tr><td>${fmtDate(p.paid_at)}</td><td>${money(p.amount)}</td><td>${esc(p.description || '')}</td>
+      <td>${url ? `<bdi>${esc(p.slate_no || '')}</bdi> · <a href="${esc(url)}" target="_blank" rel="noopener">${T('view')}</a>` : `<span class="badge warn">${T('preparing')}</span>`}</td></tr>`; }).join('')}
+  </tbody></table></div></section>`;
+}
+
+function infoHtml(name){
+  const m = state.member, age = ageOf(m.birth_date);
+  return `<section class="panel"><h2>${T('infoTitle')}</h2><dl>
+    <dt>${T('fullName')}</dt><dd>${esc(name)}</dd>
+    <dt>${T('phone')}</dt><dd><bdi>${esc(m.phone || '—')}</bdi></dd>
+    <dt>${T('email')}</dt><dd><bdi>${esc(m.email)}</bdi></dd>
+    <dt>${T('address')}</dt><dd>${esc(m.address || '—')}</dd>
+    <dt>${T('birth')}</dt><dd>${fmtDate(m.birth_date)}${age !== null ? ` · ${T('age')} ${age} ${T('years')}` : ''}</dd>
+  </dl></section>`;
+}
+
+/* ---------- Actions ---------- */
+async function onAuth(e, isSignup){
+  e.preventDefault();
+  const f = new FormData(e.target), email = String(f.get('email')).trim(), password = String(f.get('password'));
+  state.busy = true; state.msg = null; render();
+  try {
+    const res = isSignup ? await sb.auth.signUp({ email, password }) : await sb.auth.signInWithPassword({ email, password });
+    if (res.error) throw res.error;
+    if (!res.data.session) { state.msg = { type:'err', text:T('errGeneric') }; state.busy = false; render(); return; }
+    state.session = res.data.session; state.busy = false;
+    await loadAll();
+  } catch (err) {
+    const m = String(err?.message || '').toLowerCase();
+    state.msg = { type:'err', text: m.includes('invalid login') ? T('errLogin') : (m.includes('already') || m.includes('registered')) ? T('errExists') : T('errGeneric') };
+    console.error(err); state.busy = false; render();
+  }
+}
+
+async function onActivate(e){
+  e.preventDefault();
+  const code = String(new FormData(e.target).get('code')).trim();
+  state.busy = true; state.msg = null; render();
+  const { data, error } = await sb.rpc('claim_member', { code });
+  state.busy = false;
+  if (error || data !== true) { if (error) console.error(error); state.msg = { type:'err', text:T('badCode') }; render(); return; }
+  await loadAll();
+}
+
+async function loadAll(){
+  state.view = 'loading'; render();
+  try {
+    const { data: m, error } = await sb.from('members')
+      .select('id, full_name, full_name_ru, email, phone, address, birth_date')
+      .eq('user_id', state.session.user.id).maybeSingle();
+    if (error) throw error;
+    if (!m) {
+      const { data: staff } = await sb.rpc('is_staff');
+      state.view = staff === true ? 'staff' : 'activate'; render(); return;
+    }
+    state.member = m;
+    const [subs, meas, pays] = await Promise.all([
+      sb.from('subscriptions').select('plan, start_date, end_date').eq('member_id', m.id).order('end_date', { ascending:false }).limit(1),
+      sb.from('measurements').select('measured_at, height_cm, weight_kg, fat_pct, muscle_kg, water_pct').eq('member_id', m.id).order('measured_at', { ascending:false }),
+      sb.from('payments').select('paid_at, amount, description, status, slate_no, slate_url').eq('member_id', m.id).order('paid_at', { ascending:false })
+    ]);
+    for (const r of [subs, meas, pays]) if (r.error) throw r.error;
+    state.subs = subs.data; state.meas = meas.data; state.pays = pays.data;
+    state.view = 'home'; render();
+  } catch (err) {
+    console.error(err); state.msg = { type:'err', text:T('errGeneric') }; state.view = 'login'; render();
+  }
+}
+
+/* ---------- Démarrage ---------- */
+(async function init(){
+  applyLang();
+  if (!sb) { state.view = 'noconfig'; render(); return; }
+  const { data } = await sb.auth.getSession();
+  state.session = data.session;
+  if (state.session) await loadAll(); else { state.view = 'login'; render(); }
+  sb.auth.onAuthStateChange((_evt, session) => { state.session = session; if (!session && state.view !== 'login' && state.view !== 'signup') { state.view = 'login'; render(); } });
+})();
+</script>
+</body>
+</html>

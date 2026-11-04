@@ -23,3 +23,32 @@ Ouvrez ensuite `http://localhost:8080/`. Le point d’entrée est `index.html`.
 ## Important
 
 **Démonstration uniquement.** Les données sont fictives ou stockées localement dans le navigateur. Aucun backend PHP, aucune authentification réelle, aucun stockage médical sécurisé, aucun envoi d'e-mails/WhatsApp et aucune facturation officielle ne sont intégrés. Ne pas utiliser de vraies données médicales, personnelles ou fiscales avec cette maquette. Pour une exploitation réelle, prévoir serveur sécurisé, base de données, droits d'accès, conservation des documents et système fiscal conforme.
+
+## Espace adhérent (Supabase) — `espace.html`
+
+Chaque adhérent se connecte et voit **uniquement** ses données : abonnement (jours restants), mesures (poids, % de gras, muscle, eau, IMC), reçus (liens Slate) et coordonnées. L'équipe (table `staff`) voit et modifie tout. Les règles sont appliquées par la base (RLS), pas par la page.
+
+### Installation (une seule fois)
+
+1. Supabase → **SQL Editor** → **New query** → coller tout `supabase/schema.sql` → **Run**.
+2. Nouvelle requête → coller `supabase/seed-demo.sql` → **Run** (5 adhérents fictifs).
+3. Ouvrir `/espace.html`, **créer un compte** avec `david@example.com` (mot de passe au choix), puis saisir le code `DAVID1`.
+
+Codes de démo : `DAVID1`, `DANIEL`, `NOA123`, `MICHAL`, `YOSSI1` (chacun utilisable une seule fois, avec l'e-mail correspondant).
+
+### Ajouter un adhérent réel
+
+Dans **Table Editor → members** : `full_name`, `email`, `phone`, `address`, `birth_date` et un `activation_code` (ex. 6 lettres/chiffres). Donner le code à l'adhérent : il crée son compte avec **le même e-mail**, puis saisit le code.
+
+### Donner les droits d'équipe (Leonid)
+
+Après avoir créé son compte dans `/espace.html` :
+
+```sql
+insert into public.staff (user_id) select id from auth.users where email = 'adresse.de.leonid@example.com';
+```
+
+### Avant les vraies données
+
+- Activer **Confirm email** et configurer un SMTP (ex. Brevo) dans Supabase.
+- Recueillir l'accord des adhérents pour le stockage de leurs mesures (données sensibles).
